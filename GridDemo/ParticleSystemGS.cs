@@ -252,7 +252,7 @@ namespace GridDemo {
 			var device	=	Game.GraphicsDevice;
 			device.ResetStates();
 
-			device.SetTargets( null, device.BackbufferColor );
+			device.SetTargets( device.BackbufferDepth, device.BackbufferColor );
 
 			int	w	=	device.DisplayBounds.Width;
 			int h	=	device.DisplayBounds.Height;
