@@ -12,7 +12,7 @@ namespace GridDemo {
 		[STAThread]
 		static void Main (string[] args)
 		{
-			Trace.Listeners.Add( new ColoredTraceListener() );
+			//Trace.Listeners.Add( new ColoredTraceListener() );
 
 			using ( var game = new GridDemo() ) {
 				if ( DevCon.Prepare(game, @"..\..\..\Content\Content.xml", "Content") ) {

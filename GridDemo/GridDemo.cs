@@ -158,23 +158,29 @@ namespace GridDemo {
 			while (r <= radius){
 				list.Add(r);
 				r = 2 * r;
+				Log.Message("{0}", r );
 			}
 
 			//add particles
 			var ps = GetService<ParticleSystemGS>();
 						
-			for (int i = 0; i < 100; i++) {
+			for (int i = 0; i < 30; i++) {
 
 				Vector3 position = rand.NextVector3( new Vector3( -radius, -radius, -radius), 
 														new Vector3( radius, radius, radius) );
-				//for (int j = 0; j < list.Count; j++ ){
-				//	if (position.Length() < list.ElementAt(j)){
-				//		size = size * j * 2;
-				//		break;
+				for (int j = 0; j < list.Count; j++ ){
+					if (position.Length() < list.ElementAt(j)){
+						size = size * (j + 1) ;
+						break;
+					}
+				}
+				//foreach( var rad in list){
+				//	if (position.Length()<rad){
 				//	}
 				//}
 				ps.AddParticle( position, 
-									Vector2.Zero, 9999, 10, 10 );
+									Vector2.Zero, 9999, size, size);
+				size = GetService<GridConfigService>().Config.InitialSize;;
 			}
 			
 
