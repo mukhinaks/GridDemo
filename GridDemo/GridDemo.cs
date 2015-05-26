@@ -86,6 +86,7 @@ namespace GridDemo {
 		StateFactory	factory;
 		CBData			constData;
 
+
 		//visibility radius
 		int radius;
 
@@ -153,37 +154,50 @@ namespace GridDemo {
 			size		= GetService<GridConfigService>().Config.InitialSize;
 
 			//compute grid
-			int r = radiusMin;
-			List<int> list = new List<int>();
-			while (r <= radius){
-				list.Add(r);
-				r = 2 * r;
-				Log.Message("{0}", r );
-			}
+			//int r = radiusMin;
+			//List<int> list = new List<int>();
+			//while (r <= radius){
+			//	list.Add(r);
+			//	r = 2 * r;
+			//	Log.Message("{0}", r );
+			//}
+			//list.Add(radius);
 
 			//add particles
 			var ps = GetService<ParticleSystemGS>();
+			//List<Vector3> pos = new List<Vector3>();
+			//pos.Add(new Vector3(0, 8, 4));
+			//pos.Add(new Vector3(0, 8, 10));
+			//pos.Add(new Vector3(0, 8, 30));
+			var camPos = GetService<Camera>().FreeCamPosition;
+			Vector3 camXZ = new Vector3 (camPos.X, 50, camPos.Z);
 						
-			for (int i = 0; i < 30; i++) {
+			for (int i = 0; i < 100; i++) {
 
-				Vector3 position = rand.NextVector3( new Vector3( -radius, -radius, -radius), 
-														new Vector3( radius, radius, radius) );
-				for (int j = 0; j < list.Count; j++ ){
-					if (position.Length() < list.ElementAt(j)){
-						size = size * (j + 1) ;
-						break;
-					}
-				}
+				Vector3 position = rand.NextVector3( new Vector3( -radius, 50, -radius), 
+														new Vector3( radius, 50, radius) );
+				var s = size;
+				//var dist = Vector3.Distance(position, camXZ);
+				//for (int j = 0; j < list.Count; j++ ){
+				//	var l = list.ElementAt(j);
+				//	if ( (Math.Abs(position.X )  <  l) && (Math.Abs(position.Z )  < l) ){
+				//	//if ( dist  < l ){
+				//		s = size * (int) Math.Pow((j+1), 1) ;
+				//		break;
+				//	} 						
+				//}
+
 				//foreach( var rad in list){
 				//	if (position.Length()<rad){
 				//	}
 				//}
 				ps.AddParticle( position, 
-									Vector2.Zero, 9999, size, size);
-				size = GetService<GridConfigService>().Config.InitialSize;;
+									Vector2.Zero, 9999, s, s);
+						//Log.Message("{0}  {1}", s, position );
+
 			}
 			
-
+			
 			Log.Message("{0}", scene.Nodes.Count( n => n.MeshIndex >= 0 ) );
 		}
 
@@ -308,12 +322,12 @@ namespace GridDemo {
 			//lastPoint = InputDevice.MousePosition;
 			//lastVel = vel;
 
-			int r = radiusMin;
-			while (r <= radius){
- 				dr.DrawRing(new Vector3(cam.FreeCamPosition.X, cam.FreeCamPosition.Y + 100, cam.FreeCamPosition.Z), r, Color.Orange);
-				r = 2 * r;
-			}
-
+			//int r = radiusMin;
+			//while (r <= radius){
+			//	dr.DrawRing(new Vector3(cam.FreeCamPosition.X, 30, cam.FreeCamPosition.Z), r, Color.Orange);
+			//	r = 2 * r;
+			//}
+			//dr.DrawRing(new Vector3(cam.FreeCamPosition.X, 30, cam.FreeCamPosition.Z), radius, Color.Orange);
 			dr.DrawGrid(10);
 
 			base.Update( gameTime );
@@ -328,8 +342,8 @@ namespace GridDemo {
 		/// <param name="stereoEye"></param>
 		protected override void Draw ( GameTime gameTime, StereoEye stereoEye )
 		{
-			
 			var cam	=	GetService<Camera>();
+			
 
 			GraphicsDevice.ClearBackbuffer( Color.CornflowerBlue, 1, 0 );
 

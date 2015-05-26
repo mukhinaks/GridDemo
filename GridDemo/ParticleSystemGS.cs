@@ -42,6 +42,10 @@ namespace GridDemo {
 			[FieldOffset(128)] public int		MaxParticles;
 			//[FieldOffset(132)] public float		DeltaTime;
 			[FieldOffset(132)] public Vector3	Position;
+			[FieldOffset(144)] public int		NumberOfCircles;
+			[FieldOffset(148)] public float		RadiusMin;
+			[FieldOffset(152)] public float		RadiusMax;
+			[FieldOffset(156)] public float		DeltaTime;
 		} 
 
 		Random rand = new Random();
@@ -261,11 +265,14 @@ namespace GridDemo {
 			var cam	=	Game.GetService<Camera>();
 
 			Params param = new Params();
-			param.View			=	cam.GetViewMatrix( stereoEye );
-			param.Projection	=	cam.GetProjectionMatrix( stereoEye );
-			param.MaxParticles	=	100;
-			//param.DeltaTime		=	gameTime.ElapsedSec;
-			param.Position		= cam.FreeCamPosition;
+			param.View				=	cam.GetViewMatrix( stereoEye );
+			param.Projection		=	cam.GetProjectionMatrix( stereoEye );
+			param.MaxParticles		=	100;
+			param.DeltaTime			=	gameTime.ElapsedSec;
+			param.Position			= cam.FreeCamPosition;
+			param.NumberOfCircles	= 3;
+			param.RadiusMin			= Game.GetService<GridConfigService>().Config.RadiusOfFirstCircle;
+			param.RadiusMax			= Game.GetService<GridConfigService>().Config.MaxRadius;
 
 			paramsCB.SetData( param );
 
