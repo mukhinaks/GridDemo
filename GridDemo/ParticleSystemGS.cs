@@ -17,7 +17,7 @@ namespace GridDemo {
 		StateFactory	factory;
 
 		const int BlockSize				=	512;
-		const int MaxInjectingParticles	=	1024;
+		const int MaxInjectingParticles	=	128 * 128;
 		const int MaxSimulatedParticles =	1024 * 1024;
 
 		int					injectionCount = 0;
@@ -30,9 +30,11 @@ namespace GridDemo {
 		
 
 		enum Flags {
+			None,
 			INJECTION	=	0x1,
 			SIMULATION	=	0x2,
 			RENDER		=	0x4,
+			
 		}
 
 		[StructLayout(LayoutKind.Explicit, Size=144)]
@@ -116,7 +118,7 @@ namespace GridDemo {
 				new VertexOutputElement("TEXCOORD"	 , 2, 0, 4),
 			};
 
-
+			//ps.VertexOutputElements	=	outputElements;
 			if (flag==Flags.INJECTION || flag==Flags.SIMULATION) {
 				ps.VertexOutputElements	=	outputElements;
 			}
@@ -284,6 +286,12 @@ namespace GridDemo {
 			
 			device.PixelShaderSamplers[0]		= SamplerState.LinearWrap ;
 
+			//// setup data and draw point
+			//device.PipelineState	=	factory[ 0];
+			//injectionVB.SetData( injectionBufferCPU );
+			//device.SetupVertexInput( injectionVB, null );
+			////device.SetupVertexOutput( simulationDstVB, 0 );
+			//device.Draw(injectionCount, 0);
 
 			//
 			//	Simulate :

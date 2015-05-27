@@ -172,31 +172,29 @@ namespace GridDemo {
 			var camPos = GetService<Camera>().FreeCamPosition;
 			Vector3 camXZ = new Vector3 (camPos.X, 50, camPos.Z);
 						
-			for (int i = 0; i < 100; i++) {
+			//for (int i = 0; i < 1000; i++) {
 
-				Vector3 position = rand.NextVector3( new Vector3( -radius, 50, -radius), 
-														new Vector3( radius, 50, radius) );
-				var s = size;
-				//var dist = Vector3.Distance(position, camXZ);
-				//for (int j = 0; j < list.Count; j++ ){
-				//	var l = list.ElementAt(j);
-				//	if ( (Math.Abs(position.X )  <  l) && (Math.Abs(position.Z )  < l) ){
-				//	//if ( dist  < l ){
-				//		s = size * (int) Math.Pow((j+1), 1) ;
-				//		break;
-				//	} 						
-				//}
-
-				//foreach( var rad in list){
-				//	if (position.Length()<rad){
-				//	}
-				//}
-				ps.AddParticle( position, 
-									Vector2.Zero, 9999, s, s);
-						//Log.Message("{0}  {1}", s, position );
-
-			}
+			//	Vector3 position = rand.NextVector3( new Vector3( -radius, 50, -radius), 
+			//											new Vector3( radius, 50, radius) );
+			//	var s = size;
 			
+			//	ps.AddParticle( position, Vector2.Zero, 9999, s, s);
+			//			//Log.Message("{0}  {1}", s, position );
+
+			//}
+			
+			//add grid
+			//Vector3 start = Vector3.Zero;
+			Vector3 start = new Vector3(-64, 0, -64);
+			for (int i = 0; i < 128; i++) {
+				for (int j = 0; j < 128; j++){
+				Vector3 position = new Vector3( start.X + i, 10, start.Z + j);
+				var s = size;
+			
+				ps.AddParticle( position, Vector2.Zero, 9999, s, s);
+						//Log.Message("{0}  {1}", s, position );
+				}
+			}
 			
 			Log.Message("{0}", scene.Nodes.Count( n => n.MeshIndex >= 0 ) );
 		}
