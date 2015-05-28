@@ -184,19 +184,7 @@ namespace GridDemo {
 
 			//}
 			
-			//add grid
-			//Vector3 start = Vector3.Zero;
-			var pd = GetService<Points>();
-			Vector3 start = new Vector3( -64, 0, -64 );
-			for (int i = 0; i < 128; i++) {
-				for (int j = 0; j < 128; j++) {
-					Vector3 position = new Vector3( start.X + i, 50, start.Z + j );
-					var s = size;
-					pd.AddPoint( position, Vector3.Up, Color.White.ToVector4(), Vector2.Zero );
-					//ps.AddParticle( position, Vector2.Zero, 9999, s, s );
-					//Log.Message("{0}  {1}", s, position );
-				}
-			}
+			
 			
 			Log.Message("{0}", scene.Nodes.Count( n => n.MeshIndex >= 0 ) );
 		}

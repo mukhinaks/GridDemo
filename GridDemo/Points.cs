@@ -88,7 +88,22 @@ namespace GridDemo {
 			vb = new VertexBuffer( Game.GraphicsDevice, typeof( PointVertex ), 128*128 );
 		//	ib = new IndexBuffer( Game.GraphicsDevice, 128*128 );
 			list = new List<PointVertex>();
+
+			//add grid
+			Vector3 start = new Vector3( -64, 0, -64 );
+			for (int i = 0; i < 128; i++) {
+				for (int j = 0; j < 128; j++) {
+					Vector3 position = new Vector3( start.X + i, 50, start.Z + j );
+					//var s = size;
+					AddPoint( position, Vector3.Up, Color.White.ToVector4(), Vector2.Zero );
+					//ps.AddParticle( position, Vector2.Zero, 9999, s, s );
+					//Log.Message("{0}  {1}", s, position );
+				}
+			}
 			
+			
+			numberOfPoints = list.Count;
+			vb.SetData( list.ToArray(), 0, numberOfPoints );
 			//AddPoint( new Vector3( -0.5f, -0.5f, -0.5f ), new Vector3( -1.0f, 0, 0 ), color, texcoord );
 			//AddPoint( new Vector3( -0.5f, -0.5f,  0.5f ), new Vector3( -1.0f, 0, 0 ), color, texcoord );
 			//AddPoint( new Vector3( -0.5f, 0.5f, 0.5f ),   new Vector3( -1.0f, 0, 0 ), color, texcoord );
@@ -185,8 +200,6 @@ namespace GridDemo {
 
 			var cam = Game.GetService<Camera>();
 
-			numberOfPoints = list.Count;
-			vb.SetData( list.ToArray(), 0, numberOfPoints );
 
 			// fill the index buffer
 			//List<int> index = new List<int>();
