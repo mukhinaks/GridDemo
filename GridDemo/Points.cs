@@ -57,7 +57,6 @@ namespace GridDemo {
 		}
 
 		VertexBuffer vb;
-		//IndexBuffer ib;
 		List<PointVertex> list;
 
 		/// <summary>
@@ -86,7 +85,6 @@ namespace GridDemo {
 			constBuffer = new ConstantBuffer(Game.GraphicsDevice, typeof(CBData));
 
 			vb = new VertexBuffer( Game.GraphicsDevice, typeof( PointVertex ), 128*128 );
-		//	ib = new IndexBuffer( Game.GraphicsDevice, 128*128 );
 			list = new List<PointVertex>();
 
 			//add grid
@@ -94,10 +92,7 @@ namespace GridDemo {
 			for (int i = 0; i < 128; i++) {
 				for (int j = 0; j < 128; j++) {
 					Vector3 position = new Vector3( start.X + i, 50, start.Z + j );
-					//var s = size;
 					AddPoint( position, Vector3.Up, Color.White.ToVector4(), Vector2.Zero );
-					//ps.AddParticle( position, Vector2.Zero, 9999, s, s );
-					//Log.Message("{0}  {1}", s, position );
 				}
 			}
 			
@@ -167,7 +162,6 @@ namespace GridDemo {
 			if ( disposing ) {
 				SafeDispose(ref constBuffer);
 				SafeDispose(ref vb);
-				//SafeDispose(ref ib);
 			}
 
 			base.Dispose(disposing);
@@ -200,15 +194,6 @@ namespace GridDemo {
 
 			var cam = Game.GetService<Camera>();
 
-
-			// fill the index buffer
-			//List<int> index = new List<int>();
-			//for (int i = 0; i < numberOfPoints; i++) {
-			//	index.Add( i );
-			//}
-
-			//ib.SetData( index.ToArray() );
-
 			cbData.Projection = cam.GetProjectionMatrix(stereoEye);
 			cbData.View = cam.GetViewMatrix(stereoEye);
 			cbData.World = Matrix.Identity;
@@ -225,9 +210,7 @@ namespace GridDemo {
 			Game.GraphicsDevice.PixelShaderResources[0] = texture;
 
 			// setup data and draw points
-		//	Game.GraphicsDevice.SetupVertexInput( vb, ib );
 			Game.GraphicsDevice.SetupVertexInput( vb, null );
-			//Game.GraphicsDevice.DrawIndexed(numberOfPoints, 0, 0);
 			Game.GraphicsDevice.Draw(numberOfPoints, 0);
 
 						
