@@ -54,6 +54,7 @@
     <Compile Include="GridConfig.cs" />
     <Compile Include="GridDemo.cs" />
     <Compile Include="ParticleSystemGS.cs" />
+    <Compile Include="Points.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

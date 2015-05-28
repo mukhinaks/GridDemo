@@ -35,6 +35,7 @@ namespace GridDemo {
 
 			AddService( new ParticleSystemGS( this ), true, true, 500, 500 );
 			AddService( new GridConfigService( this ), false, false, 1000, 1000 );
+			AddService( new Points( this ), true, true, 500, 500 );
 			
 			//	load configuration :
 			LoadConfiguration();
@@ -171,28 +172,29 @@ namespace GridDemo {
 			//pos.Add(new Vector3(0, 8, 30));
 			var camPos = GetService<Camera>().FreeCamPosition;
 			Vector3 camXZ = new Vector3 (camPos.X, 50, camPos.Z);
-						
+
 			//for (int i = 0; i < 1000; i++) {
 
-			//	Vector3 position = rand.NextVector3( new Vector3( -radius, 50, -radius), 
-			//											new Vector3( radius, 50, radius) );
+			//	Vector3 position = rand.NextVector3( new Vector3( -radius, 50, -radius ),
+			//											new Vector3( radius, 50, radius ) );
 			//	var s = size;
-			
-			//	ps.AddParticle( position, Vector2.Zero, 9999, s, s);
-			//			//Log.Message("{0}  {1}", s, position );
+
+			//	ps.AddParticle( position, Vector2.Zero, 9999, s, s );
+			//	//Log.Message("{0}  {1}", s, position );
 
 			//}
 			
 			//add grid
 			//Vector3 start = Vector3.Zero;
-			Vector3 start = new Vector3(-64, 0, -64);
+			var pd = GetService<Points>();
+			Vector3 start = new Vector3( -64, 0, -64 );
 			for (int i = 0; i < 128; i++) {
-				for (int j = 0; j < 128; j++){
-				Vector3 position = new Vector3( start.X + i, 10, start.Z + j);
-				var s = size;
-			
-				ps.AddParticle( position, Vector2.Zero, 9999, s, s);
-						//Log.Message("{0}  {1}", s, position );
+				for (int j = 0; j < 128; j++) {
+					Vector3 position = new Vector3( start.X + i, 10, start.Z + j );
+					var s = size;
+					pd.AddPoint( position, Vector3.Up, Color.Red.ToVector4(), Vector2.Zero );
+					//ps.AddParticle( position, Vector2.Zero, 9999, s, s );
+					//Log.Message("{0}  {1}", s, position );
 				}
 			}
 			
@@ -350,29 +352,29 @@ namespace GridDemo {
 			constData.ViewPos		=	cam.GetCameraPosition4( stereoEye );
 			constData.World			=	Matrix.Identity;
 
-			for (int j = 0; j<1; j++) {
+			for (int j = 0; j < 1; j++) {
 
-				GraphicsDevice.PipelineState			=	factory[0];
-				GraphicsDevice.PixelShaderSamplers[0]	=	SamplerState.AnisotropicWrap;
-				GraphicsDevice.PixelShaderConstants[0]	=	constBuffer;
-				GraphicsDevice.VertexShaderConstants[0]	=	constBuffer;
+				GraphicsDevice.PipelineState = factory[0];
+				GraphicsDevice.PixelShaderSamplers[0] = SamplerState.AnisotropicWrap;
+				GraphicsDevice.PixelShaderConstants[0] = constBuffer;
+				GraphicsDevice.VertexShaderConstants[0] = constBuffer;
 
 
-				for (int i=0; i<scene.Nodes.Count; i++) {
+				for (int i=0; i < scene.Nodes.Count; i++) {
 
 					int meshId	=	scene.Nodes[i].MeshIndex;
 
-					if (meshId<0) {
+					if (meshId < 0) {
 						continue;
 					}
 
-					constData.World	=	worldMatricies[ i ];
+					constData.World = worldMatricies[i];
 					constBuffer.SetData( constData );
 
 					GraphicsDevice.SetupVertexInput( vertexBuffers[meshId], indexBuffers[meshId] );
 
-					foreach ( var subset in scene.Meshes[meshId].Subsets ) {
-						GraphicsDevice.PixelShaderResources[0]	=	textures[ subset.MaterialIndex ];
+					foreach (var subset in scene.Meshes[meshId].Subsets) {
+						GraphicsDevice.PixelShaderResources[0] = textures[subset.MaterialIndex];
 						GraphicsDevice.DrawIndexed( subset.PrimitiveCount * 3, subset.StartPrimitive * 3, 0 );
 					}
 				}

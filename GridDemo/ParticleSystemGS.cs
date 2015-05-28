@@ -8,8 +8,10 @@ using Fusion;
 using Fusion.Graphics;
 using Fusion.Mathematics;
 
-namespace GridDemo {
-	public class ParticleSystemGS : GameService {
+namespace GridDemo
+{
+	public class ParticleSystemGS: GameService
+	{
 
 
 		Texture2D		texture;
@@ -27,41 +29,56 @@ namespace GridDemo {
 		VertexBuffer		injectionVB;
 		VertexBuffer		simulationSrcVB;
 		VertexBuffer		simulationDstVB;
-		
 
-		enum Flags {
+
+		enum Flags
+		{
 			None,
-			//INJECTION	=	0x1,
-			//SIMULATION	=	0x2,
-			//RENDER		=	0x4,
-			
+			INJECTION = 0x1,
+			SIMULATION = 0x2,
+			RENDER = 0x4,
+
 		}
 
-		[StructLayout(LayoutKind.Explicit, Size=144)]
-		struct Params {
-			[FieldOffset(  0)] public Matrix	View;
-			[FieldOffset( 64)] public Matrix	Projection;
-			[FieldOffset(128)] public int		MaxParticles;
+		[StructLayout( LayoutKind.Explicit, Size = 144 )]
+		struct Params
+		{
+			[FieldOffset( 0 )]
+			public Matrix	View;
+			[FieldOffset( 64 )]
+			public Matrix	Projection;
+			[FieldOffset( 128 )]
+			public int		MaxParticles;
 			//[FieldOffset(132)] public float		DeltaTime;
-			[FieldOffset(132)] public Vector3	Position;
-			[FieldOffset(144)] public int		NumberOfCircles;
-			[FieldOffset(148)] public float		RadiusMin;
-			[FieldOffset(152)] public float		RadiusMax;
-			[FieldOffset(156)] public float		DeltaTime;
-			[FieldOffset(160)] public Matrix	World;
-			[FieldOffset(224)] public Vector4	ViewPos;
-		} 
+			[FieldOffset( 132 )]
+			public Vector3	Position;
+			[FieldOffset( 144 )]
+			public int		NumberOfCircles;
+			[FieldOffset( 148 )]
+			public float		RadiusMin;
+			[FieldOffset( 152 )]
+			public float		RadiusMax;
+			[FieldOffset( 156 )]
+			public float		DeltaTime;
+		}
 
 		Random rand = new Random();
 
 
-		struct ParticleVertex {
-			[Vertex("POSITION"	, 0)] public Vector4	Position;
-			[Vertex("COLOR"		, 0)] public Color4		Color0;
-			[Vertex("COLOR"		, 1)] public Color4		Color1;
-			[Vertex("TEXCOORD"	, 0)] public Vector4	VelAccel;
-			[Vertex("TEXCOORD"	, 1)] public Vector4	SizeAngle;	//	size0, size1, angle0, angle1
-			[Vertex("TEXCOORD"	, 2)] public Vector4	Timing;		//	total, lifetime, fade-in, fade-out;
+		struct ParticleVertex
+		{
+			[Vertex( "POSITION", 0 )]
+			public Vector4	Position;
+			[Vertex( "COLOR", 0 )]
+			public Color4		Color0;
+			[Vertex( "COLOR", 1 )]
+			public Color4		Color1;
+			[Vertex( "TEXCOORD", 0 )]
+			public Vector4	VelAccel;
+			[Vertex( "TEXCOORD", 1 )]
+			public Vector4	SizeAngle;	//	size0, size1, angle0, angle1
+			[Vertex( "TEXCOORD", 2 )]
+			public Vector4	Timing;		//	total, lifetime, fade-in, fade-out;
 		}
 
 
@@ -70,21 +87,20 @@ namespace GridDemo {
 		/// 
 		/// </summary>
 		/// <param name="game"></param>
-		public ParticleSystemGS ( Game game ) : base (game)
-		{
+		public ParticleSystemGS(Game game)
+			: base( game ) {
 		}
 
 
 		/// <summary>
 		/// 
 		/// </summary>
-		public override void Initialize ()
-		{
-			paramsCB			=	new ConstantBuffer( Game.GraphicsDevice, typeof(Params) );
+		public override void Initialize() {
+			paramsCB = new ConstantBuffer( Game.GraphicsDevice, typeof( Params ) );
 
-			injectionVB		=	new VertexBuffer( Game.GraphicsDevice, typeof(ParticleVertex), MaxInjectingParticles );
-			simulationSrcVB	=	new VertexBuffer( Game.GraphicsDevice, typeof(ParticleVertex), MaxSimulatedParticles, true );
-			simulationDstVB	=	new VertexBuffer( Game.GraphicsDevice, typeof(ParticleVertex), MaxSimulatedParticles, true );
+			injectionVB = new VertexBuffer( Game.GraphicsDevice, typeof( ParticleVertex ), MaxInjectingParticles );
+			simulationSrcVB = new VertexBuffer( Game.GraphicsDevice, typeof( ParticleVertex ), MaxSimulatedParticles, true );
+			simulationDstVB = new VertexBuffer( Game.GraphicsDevice, typeof( ParticleVertex ), MaxSimulatedParticles, true );
 
 			base.Initialize();
 
@@ -94,41 +110,39 @@ namespace GridDemo {
 
 
 
-		void Game_Reloading ( object sender, EventArgs e )
-		{
+		void Game_Reloading(object sender, EventArgs e) {
 			SafeDispose( ref factory );
 
-			texture		=	Game.Content.Load<Texture2D>("particle3");
-			shader		=	Game.Content.Load<Ubershader>("render");
-			factory		=	new StateFactory( shader, typeof(Flags), (ps,i) => EnumAction( ps, (Flags)i ) );
+			texture = Game.Content.Load<Texture2D>( "particle3" );
+			shader = Game.Content.Load<Ubershader>( "test" );
+			factory = new StateFactory( shader, typeof( Flags ), (ps, i) => EnumAction( ps, (Flags) i ) );
 		}
 
 
 
-		void EnumAction ( PipelineState ps, Flags flag )
-		{
-			ps.Primitive			=	Primitive.PointList;
-			ps.VertexInputElements	=	VertexInputElement.FromStructure<ParticleVertex>();
-			ps.DepthStencilState	=	DepthStencilState.Readonly;
+		void EnumAction(PipelineState ps, Flags flag) {
+			ps.Primitive = Primitive.PointList;
+			ps.VertexInputElements = VertexInputElement.FromStructure<ParticleVertex>();
+			ps.DepthStencilState = DepthStencilState.Readonly;
 
-			//var outputElements = new[]{
-			//	new VertexOutputElement("SV_POSITION", 0, 0, 4),
-			//	new VertexOutputElement("COLOR"		 , 0, 0, 4),
-			//	new VertexOutputElement("COLOR"		 , 1, 0, 4),
-			//	new VertexOutputElement("TEXCOORD"	 , 0, 0, 4),
-			//	new VertexOutputElement("TEXCOORD"	 , 1, 0, 4),
-			//	new VertexOutputElement("TEXCOORD"	 , 2, 0, 4),
-			//};
+			var outputElements = new[]{
+				new VertexOutputElement("SV_POSITION", 0, 0, 4),
+				new VertexOutputElement("COLOR"		 , 0, 0, 4),
+				new VertexOutputElement("COLOR"		 , 1, 0, 4),
+				new VertexOutputElement("TEXCOORD"	 , 0, 0, 4),
+				new VertexOutputElement("TEXCOORD"	 , 1, 0, 4),
+				new VertexOutputElement("TEXCOORD"	 , 2, 0, 4),
+			};
 
-			////ps.VertexOutputElements	=	outputElements;
-			//if (flag==Flags.INJECTION || flag==Flags.SIMULATION) {
-			//	ps.VertexOutputElements	=	outputElements;
-			//}
+			//ps.VertexOutputElements	=	outputElements;
+			if (flag == Flags.INJECTION || flag == Flags.SIMULATION) {
+				ps.VertexOutputElements = outputElements;
+			}
 
-			//if (flag==Flags.RENDER) {
-			//	ps.BlendState	=	BlendState.Screen;
-			//	ps.RasterizerState	=	RasterizerState.CullNone;
-			//}
+			if (flag == Flags.RENDER) {
+				ps.BlendState = BlendState.Screen;
+				ps.RasterizerState = RasterizerState.CullNone;
+			}
 		}
 
 
@@ -136,12 +150,11 @@ namespace GridDemo {
 		/// Returns random radial vector
 		/// </summary>
 		/// <returns></returns>
-		Vector2 RadialRandomVector ()
-		{
+		Vector2 RadialRandomVector() {
 			Vector2 r;
 			do {
-				r	=	rand.NextVector2( -Vector2.One, Vector2.One );
-			} while ( r.Length() > 1 );
+				r = rand.NextVector2( -Vector2.One, Vector2.One );
+			} while (r.Length() > 1);
 
 			//r.Normalize();
 
@@ -154,10 +167,9 @@ namespace GridDemo {
 		/// Adds random particle at specified position
 		/// </summary>
 		/// <param name="p"></param>
-		public void AddParticle ( Vector3 pos, Vector2 vel, float lifeTime, float size0, float size1, float colorBoost = 1 )
-		{
-			if (injectionCount>=MaxInjectingParticles) {
-				Log.Warning("Too much injected particles per frame");
+		public void AddParticle(Vector3 pos, Vector2 vel, float lifeTime, float size0, float size1, float colorBoost = 1) {
+			if (injectionCount >= MaxInjectingParticles) {
+				Log.Warning( "Too much injected particles per frame" );
 				//injectionCount = 0;
 				return;
 			}
@@ -166,19 +178,19 @@ namespace GridDemo {
 			var v = vel + RadialRandomVector() * 5;
 			var a = Vector2.UnitY * 10 - v * 0.2f;
 			var r = rand.NextFloat( -MathUtil.Pi, MathUtil.Pi );
-			var s = (rand.NextFloat(0,1)>0.5f) ? -1 : 1;
+			var s = (rand.NextFloat( 0, 1 ) > 0.5f) ? -1 : 1;
 
-			var p = new ParticleVertex () {
-				Position		=	new Vector4(pos, 1),
-				VelAccel		=	Vector4.Zero, //new Vector4(v.X, v.Y, a.X, a.Y ),
-				Color0			=	Color4.White,
-				Color1			=	rand.NextColor4() * colorBoost,
-				SizeAngle		=	new Vector4( size0, size1, r, r + 2*s ),
-				Timing			=	new Vector4( rand.NextFloat(lifeTime/7, lifeTime), 0, 0.01f, 0.01f ),
+			var p = new ParticleVertex() {
+				Position = new Vector4( pos, 1 ),
+				VelAccel = Vector4.Zero, //new Vector4(v.X, v.Y, a.X, a.Y ),
+				Color0 = Color4.White,
+				Color1 = rand.NextColor4() * colorBoost,
+				SizeAngle = new Vector4( size0, size1, r, r + 2 * s ),
+				Timing = new Vector4( rand.NextFloat( lifeTime / 7, lifeTime ), 0, 0.01f, 0.01f ),
 			};
 
-			injectionBufferCPU[ injectionCount ] = p;
-			injectionCount ++;
+			injectionBufferCPU[injectionCount] = p;
+			injectionCount++;
 		}
 
 
@@ -186,9 +198,8 @@ namespace GridDemo {
 		/// <summary>
 		/// Makes all particles wittingly dead
 		/// </summary>
-		void ClearParticleBuffer ()
-		{
-			for (int i=0; i<MaxInjectingParticles; i++) {
+		void ClearParticleBuffer() {
+			for (int i=0; i < MaxInjectingParticles; i++) {
 				injectionBufferCPU[i].Timing.X = -999999;
 			}
 			injectionCount = 0;
@@ -200,8 +211,7 @@ namespace GridDemo {
 		/// 
 		/// </summary>
 		/// <param name="disposing"></param>
-		protected override void Dispose ( bool disposing )
-		{
+		protected override void Dispose(bool disposing) {
 			if (disposing) {
 				SafeDispose( ref factory );
 
@@ -220,8 +230,7 @@ namespace GridDemo {
 		/// 
 		/// </summary>
 		/// <param name="gameTime"></param>
-		public override void Update ( GameTime gameTime )
-		{
+		public override void Update(GameTime gameTime) {
 			base.Update( gameTime );
 
 			var ds = Game.GetService<DebugStrings>();
@@ -236,8 +245,7 @@ namespace GridDemo {
 		/// <summary>
 		/// 
 		/// </summary>
-		void SwapParticleBuffers ()
-		{
+		void SwapParticleBuffers() {
 			var temp = simulationDstVB;
 			simulationDstVB = simulationSrcVB;
 			simulationSrcVB = temp;
@@ -250,12 +258,11 @@ namespace GridDemo {
 		/// </summary>
 		/// <param name="gameTime"></param>
 		/// <param name="stereoEye"></param>
-		public override void Draw ( GameTime gameTime, Fusion.Graphics.StereoEye stereoEye )
-		{
+		public override void Draw(GameTime gameTime, Fusion.Graphics.StereoEye stereoEye) {
 			base.Draw( gameTime, stereoEye );
-			
+
 			var ds		=	Game.GetService<DebugStrings>();
-			ds.Add("{0}", injectionCount );
+			ds.Add( "{0}", injectionCount );
 
 			var device	=	Game.GraphicsDevice;
 			device.ResetStates();
@@ -269,33 +276,25 @@ namespace GridDemo {
 			var cam	=	Game.GetService<Camera>();
 
 			Params param = new Params();
-			param.View				=	cam.GetViewMatrix( stereoEye );
-			param.Projection		=	cam.GetProjectionMatrix( stereoEye );
-			param.MaxParticles		=	100;
-			param.DeltaTime			=	gameTime.ElapsedSec;
-			param.Position			= cam.FreeCamPosition;
-			param.NumberOfCircles	= 3;
-			param.RadiusMin			= Game.GetService<GridConfigService>().Config.RadiusOfFirstCircle;
-			param.RadiusMax			= Game.GetService<GridConfigService>().Config.MaxRadius;
-			param.World				= Matrix.Identity;
-			param.ViewPos			= new Vector4(cam.GetCameraMatrix(stereoEye).TranslationVector, 1);
+			param.View = cam.GetViewMatrix( stereoEye );
+			param.Projection = cam.GetProjectionMatrix( stereoEye );
+			param.MaxParticles = 100;
+			param.DeltaTime = gameTime.ElapsedSec;
+			param.Position = cam.FreeCamPosition;
+			param.NumberOfCircles = 3;
+			param.RadiusMin = Game.GetService<GridConfigService>().Config.RadiusOfFirstCircle;
+			param.RadiusMax = Game.GetService<GridConfigService>().Config.MaxRadius;
+
 			paramsCB.SetData( param );
 
 
-			device.PipelineState = factory[0];
-			device.VertexShaderConstants[0]		= paramsCB ;
-			device.GeometryShaderConstants[0]	= paramsCB ;
-			device.PixelShaderConstants[0]		= paramsCB ;
-			
-			//device.PixelShaderSamplers[0]		= SamplerState.LinearWrap ;
-			device.PixelShaderSamplers[0]		= SamplerState.AnisotropicWrap ;
 
+			device.VertexShaderConstants[0] = paramsCB;
+			device.GeometryShaderConstants[0] = paramsCB;
+			device.PixelShaderConstants[0] = paramsCB;
 
-			// setup data and draw box
-			injectionVB.SetData( injectionBufferCPU );
-			device.SetupVertexInput(injectionVB, null);
-			device.DrawAuto();
-					
+			device.PixelShaderSamplers[0] = SamplerState.LinearWrap;
+
 			//// setup data and draw point
 			//device.PipelineState	=	factory[ 0];
 			//injectionVB.SetData( injectionBufferCPU );
@@ -303,52 +302,52 @@ namespace GridDemo {
 			////device.SetupVertexOutput( simulationDstVB, 0 );
 			//device.Draw(injectionCount, 0);
 
-			////
-			////	Simulate :
-			////
-			//device.PipelineState	=	factory[ (int)Flags.SIMULATION ];
+			//
+			//	Simulate :
+			//
+			device.PipelineState = factory[(int) Flags.SIMULATION];
 
-			//device.SetupVertexInput( simulationSrcVB, null );
-			//device.SetupVertexOutput( simulationDstVB, 0 );
-		
-			//device.DrawAuto();
+			device.SetupVertexInput( simulationSrcVB, null );
+			device.SetupVertexOutput( simulationDstVB, 0 );
 
-			////
-			////	Inject :
-			////
-			//injectionVB.SetData( injectionBufferCPU );
+			device.DrawAuto();
 
-			//device.PipelineState	=	factory[ (int)Flags.INJECTION ];
+			//
+			//	Inject :
+			//
+			injectionVB.SetData( injectionBufferCPU );
 
-			//device.SetupVertexInput( injectionVB, null );
-			//device.SetupVertexOutput( simulationDstVB, -1 );
-		
-			//device.Draw(injectionCount, 0 );
+			device.PipelineState = factory[(int) Flags.INJECTION];
 
-			//SwapParticleBuffers();	
+			device.SetupVertexInput( injectionVB, null );
+			device.SetupVertexOutput( simulationDstVB, -1 );
 
-			////
-			////	Render
-			////
-			//paramsCB.SetData( param );
-			//device.VertexShaderConstants[0]		= paramsCB ;
-			//device.GeometryShaderConstants[0]	= paramsCB ;
-			//device.PixelShaderConstants[0]		= paramsCB ;
+			device.Draw( injectionCount, 0 );
 
-			//device.PipelineState	=	factory[ (int)Flags.RENDER ];
+			SwapParticleBuffers();
 
-			//device.PixelShaderResources[0]	=	texture ;
+			//
+			//	Render
+			//
+			paramsCB.SetData( param );
+			device.VertexShaderConstants[0] = paramsCB;
+			device.GeometryShaderConstants[0] = paramsCB;
+			device.PixelShaderConstants[0] = paramsCB;
 
-			//device.SetupVertexOutput( null, 0 );
-			//device.SetupVertexInput( simulationSrcVB, null );
+			device.PipelineState = factory[(int) Flags.RENDER];
 
-			////device.Draw( Primitive.PointList, injectionCount, 0 );
+			device.PixelShaderResources[0] = texture;
 
-			//device.DrawAuto();
-			////device.Draw( Primitive.PointList, MaxSimulatedParticles, 0 );
+			device.SetupVertexOutput( null, 0 );
+			device.SetupVertexInput( simulationSrcVB, null );
+
+			//device.Draw( Primitive.PointList, injectionCount, 0 );
+
+			device.DrawAuto();
+			//device.Draw( Primitive.PointList, MaxSimulatedParticles, 0 );
 
 
-			//ClearParticleBuffer();
+			ClearParticleBuffer();
 
 		}
 
