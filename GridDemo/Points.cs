@@ -57,7 +57,7 @@ namespace GridDemo {
 		}
 
 		VertexBuffer vb;
-		IndexBuffer ib;
+		//IndexBuffer ib;
 		List<PointVertex> list;
 
 		/// <summary>
@@ -86,7 +86,7 @@ namespace GridDemo {
 			constBuffer = new ConstantBuffer(Game.GraphicsDevice, typeof(CBData));
 
 			vb = new VertexBuffer( Game.GraphicsDevice, typeof( PointVertex ), 128*128 );
-			ib = new IndexBuffer( Game.GraphicsDevice, 128*128 );
+		//	ib = new IndexBuffer( Game.GraphicsDevice, 128*128 );
 			list = new List<PointVertex>();
 			
 			//AddPoint( new Vector3( -0.5f, -0.5f, -0.5f ), new Vector3( -1.0f, 0, 0 ), color, texcoord );
@@ -131,7 +131,7 @@ namespace GridDemo {
 		void Game_Reloading(object sender, EventArgs e) {
 			uberShader = Game.Content.Load<Ubershader>("render");
 			factory = new StateFactory( uberShader, typeof( RenderFlags ), (ps, i) => EnumAction( ps, (RenderFlags) i ) );
-			texture = Game.Content.Load<Texture2D>(@"Scenes\lena");
+			texture = Game.Content.Load<Texture2D>("tex");
 		}
 
 		void EnumAction(PipelineState ps, RenderFlags flag) {
@@ -152,7 +152,7 @@ namespace GridDemo {
 			if ( disposing ) {
 				SafeDispose(ref constBuffer);
 				SafeDispose(ref vb);
-				SafeDispose(ref ib);
+				//SafeDispose(ref ib);
 			}
 
 			base.Dispose(disposing);
@@ -189,12 +189,12 @@ namespace GridDemo {
 			vb.SetData( list.ToArray(), 0, numberOfPoints );
 
 			// fill the index buffer
-			List<int> index = new List<int>();
-			for (int i = 0; i < numberOfPoints; i++) {
-				index.Add( i );
-			}
+			//List<int> index = new List<int>();
+			//for (int i = 0; i < numberOfPoints; i++) {
+			//	index.Add( i );
+			//}
 
-			ib.SetData( index.ToArray() );
+			//ib.SetData( index.ToArray() );
 
 			cbData.Projection = cam.GetProjectionMatrix(stereoEye);
 			cbData.View = cam.GetViewMatrix(stereoEye);
@@ -212,8 +212,10 @@ namespace GridDemo {
 			Game.GraphicsDevice.PixelShaderResources[0] = texture;
 
 			// setup data and draw points
-			Game.GraphicsDevice.SetupVertexInput( vb, ib );
-			Game.GraphicsDevice.DrawIndexed(numberOfPoints, 0, 0);
+		//	Game.GraphicsDevice.SetupVertexInput( vb, ib );
+			Game.GraphicsDevice.SetupVertexInput( vb, null );
+			//Game.GraphicsDevice.DrawIndexed(numberOfPoints, 0, 0);
+			Game.GraphicsDevice.Draw(numberOfPoints, 0);
 
 						
 			base.Draw(gameTime, stereoEye);
