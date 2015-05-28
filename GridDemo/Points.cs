@@ -76,10 +76,32 @@ namespace GridDemo {
 			list.Add( p );
 		}
 
+		private void CreateRing(int dimension, Vector3 leftCorner, int step, Color color) {
+			for (int i = 0; i < dimension; i++) {
+				AddPoint( leftCorner + Vector3.UnitZ * step * i, Vector3.Up, color.ToVector4(), Vector2.Zero );
+				AddPoint( leftCorner + (Vector3.UnitZ * step * i + Vector3.UnitX * (dimension - 1) * step), Vector3.Up, color.ToVector4(), Vector2.Zero );
+			}
+			for (int i = 1; i < (dimension - 1); i++) {
+				AddPoint( leftCorner + Vector3.UnitX * step * i, Vector3.Up, color.ToVector4(), Vector2.Zero );
+				AddPoint( leftCorner + (Vector3.UnitX * i + Vector3.UnitZ * (dimension - 1) ) * step, Vector3.Up, color.ToVector4(), Vector2.Zero );
+			}
+		}
+
+		private void CreateLastRing(int dimension, Vector3 leftCorner, int step, Color color) {
+			for (int i = 1; i < dimension; i+=2) {
+				AddPoint( leftCorner + Vector3.UnitZ * step * i, Vector3.Up, color.ToVector4(), Vector2.Zero );
+				AddPoint( leftCorner + (Vector3.UnitZ * step * i + Vector3.UnitX * (dimension - 1) * step), Vector3.Up, color.ToVector4(), Vector2.Zero );
+			}
+			for (int i = 1; i < (dimension - 1); i+=2) {
+				AddPoint( leftCorner + Vector3.UnitX * step * i, Vector3.Up, color.ToVector4(), Vector2.Zero );
+				AddPoint( leftCorner + (Vector3.UnitX * i + Vector3.UnitZ * (dimension - 1)) * step, Vector3.Up, color.ToVector4(), Vector2.Zero );
+			}
+		}
+
 		/// <summary>
 		/// Add services :
 		/// </summary>
-		public override void Initialize ()
+		public override void Initialize()
 		{
 
 			constBuffer = new ConstantBuffer(Game.GraphicsDevice, typeof(CBData));
@@ -87,48 +109,33 @@ namespace GridDemo {
 			vb = new VertexBuffer( Game.GraphicsDevice, typeof( PointVertex ), 128*128 );
 			list = new List<PointVertex>();
 
-			//add grid
-			Vector3 start = new Vector3( -64, 0, -64 );
-			for (int i = 0; i < 128; i++) {
-				for (int j = 0; j < 128; j++) {
-					Vector3 position = new Vector3( start.X + i, 50, start.Z + j );
-					AddPoint( position, Vector3.Up, Color.White.ToVector4(), Vector2.Zero );
-				}
+			//grid
+			Vector3 start = new Vector3( 0, 50, 0 );
+			int step = 1;
+
+			//add inside square
+			CreateRing( 1, start, step, Color.White );
+			start -= Vector3.UnitX + Vector3.UnitZ;
+			CreateRing( 3, start, step, Color.White );
+			start -= Vector3.UnitX + Vector3.UnitZ;
+			
+			//create circles
+			int levels = 8;
+			int currentRing = 1;
+			while (currentRing <= levels){
+				CreateRing( 5, start, step, Color.Red );
+				start -= (Vector3.UnitX + Vector3.UnitZ) * step;
+				CreateRing( 7, start, step , Color.Red);
+				start -= (Vector3.UnitX + Vector3.UnitZ) * step;
+				CreateLastRing( 9, start, step, Color.LightCyan );
+				step = step * 2;
+				currentRing++;
 			}
-			
-			
+
+			//fill vertex buffer
 			numberOfPoints = list.Count;
 			vb.SetData( list.ToArray(), 0, numberOfPoints );
-			//AddPoint( new Vector3( -0.5f, -0.5f, -0.5f ), new Vector3( -1.0f, 0, 0 ), color, texcoord );
-			//AddPoint( new Vector3( -0.5f, -0.5f,  0.5f ), new Vector3( -1.0f, 0, 0 ), color, texcoord );
-			//AddPoint( new Vector3( -0.5f, 0.5f, 0.5f ),   new Vector3( -1.0f, 0, 0 ), color, texcoord );
-			//AddPoint( new Vector3( -0.5f, 0.5f, -0.5f ),  new Vector3( -1.0f, 0, 0 ), color, texcoord );
-
-			//AddPoint( new Vector3( 0.5f, -0.5f, -0.5f ), new Vector3( 1.0f, 0, 0 ), color, texcoord );
-			//AddPoint( new Vector3( 0.5f, -0.5f, 0.5f ),  new Vector3( 1.0f, 0, 0 ), color, texcoord );
-			//AddPoint( new Vector3( 0.5f, 0.5f, 0.5f ),   new Vector3( 1.0f, 0, 0 ), color, texcoord );
-			//AddPoint( new Vector3( 0.5f, 0.5f, -0.5f ),  new Vector3( 1.0f, 0, 0 ), color, texcoord );
 			
-			//AddPoint( new Vector3( -0.5f, -0.5f, -0.5f ), new Vector3( 0, 0, -1.0f ), color, texcoord );
-			//AddPoint( new Vector3( 0.5f, -0.5f, -0.5f ),  new Vector3( 0, 0, -1.0f ), color, texcoord );
-			//AddPoint( new Vector3( 0.5f, 0.5f, -0.5f ),   new Vector3( 0, 0, -1.0f ), color, texcoord );
-			//AddPoint( new Vector3( -0.5f, 0.5f, -0.5f ),  new Vector3( 0, 0, -1.0f ), color, texcoord );
-
-			//AddPoint( new Vector3( -0.5f, -0.5f, 0.5f ), new Vector3( 0, 0, 1.0f ), color, texcoord );
-			//AddPoint( new Vector3( 0.5f, -0.5f, 0.5f ),  new Vector3( 0, 0, 1.0f ), color, texcoord );
-			//AddPoint( new Vector3( 0.5f, 0.5f, 0.5f ),   new Vector3( 0, 0, 1.0f ), color, texcoord );
-			//AddPoint( new Vector3( -0.5f, 0.5f, 0.5f ),  new Vector3( 0, 0, 1.0f ), color, texcoord );
-
-			//AddPoint( new Vector3( 0.5f, 0.5f, -0.5f ),  new Vector3( 0, 1.0f, 0 ), color, texcoord );
-			//AddPoint( new Vector3( 0.5f, 0.5f, 0.5f ),   new Vector3( 0, 1.0f, 0 ), color, texcoord );
-			//AddPoint( new Vector3( -0.5f, 0.5f, 0.5f ),  new Vector3( 0, 1.0f, 0 ), color, texcoord );
-			//AddPoint( new Vector3( -0.5f, 0.5f, -0.5f ), new Vector3( 0, 1.0f, 0 ), color, texcoord );
-
-			//AddPoint( new Vector3( 0.5f, -0.5f, -0.5f ),  new Vector3( 0, -1.0f, 0 ), color, texcoord );
-			//AddPoint( new Vector3( 0.5f, -0.5f, 0.5f ),   new Vector3( 0, -1.0f, 0 ), color, texcoord );
-			//AddPoint( new Vector3( -0.5f, -0.5f, 0.5f ),  new Vector3( 0, -1.0f, 0 ), color, texcoord );
-			//AddPoint( new Vector3( -0.5f, -0.5f, -0.5f ), new Vector3( 0, -1.0f, 0 ), color, texcoord );
-
 			base.Initialize();
 
 			Game.Reloading += Game_Reloading;
@@ -139,7 +146,7 @@ namespace GridDemo {
 
 
 		void Game_Reloading(object sender, EventArgs e) {
-			uberShader = Game.Content.Load<Ubershader>("render");
+			uberShader = Game.Content.Load<Ubershader>("points");
 			factory = new StateFactory( uberShader, typeof( RenderFlags ), (ps, i) => EnumAction( ps, (RenderFlags) i ) );
 			texture = Game.Content.Load<Texture2D>("tex");
 		}
