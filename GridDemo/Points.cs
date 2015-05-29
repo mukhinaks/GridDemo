@@ -29,6 +29,7 @@ namespace GridDemo {
 		StateFactory factory;
 		Texture2D texture;
 		int numberOfPoints = 0;
+		Random random = new Random();
 
 		//parameters of grid
 		int		numberOfLayers;
@@ -87,27 +88,41 @@ namespace GridDemo {
 		}
 
 		//create a standard rectangular ring
-		private void CreateRing(int dimension, Vector3 leftCorner, float step, Color color, bool offset) {
-
+		private void CreateRing(int dimension, Vector3 leftCorner, float step, Color color, bool jitter) {
+			Vector3 offset = Vector3.Zero;
 			for (int i = 0; i < dimension; i++) {
-				AddPoint( leftCorner + Vector3.UnitZ * step * i, Vector3.Up, color.ToVector4(), Vector2.Zero );
-				AddPoint( leftCorner + (Vector3.UnitZ * step * i + Vector3.UnitX * (dimension - 1) * step), Vector3.Up, color.ToVector4(), Vector2.Zero );
+				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 3 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
+				AddPoint( leftCorner + Vector3.UnitZ * step * i + offset, Vector3.Up, color.ToVector4(), Vector2.Zero );
+
+				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 3 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
+				AddPoint( leftCorner + (Vector3.UnitZ * step * i + Vector3.UnitX * (dimension - 1) * step) + offset, Vector3.Up, color.ToVector4(), Vector2.Zero );
 			}
 			for (int i = 1; i < (dimension - 1); i++) {
-				AddPoint( leftCorner + Vector3.UnitX * step * i, Vector3.Up, color.ToVector4(), Vector2.Zero );
-				AddPoint( leftCorner + (Vector3.UnitX * i + Vector3.UnitZ * (dimension - 1) ) * step, Vector3.Up, color.ToVector4(), Vector2.Zero );
+				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 3 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
+				AddPoint( leftCorner + Vector3.UnitX * step * i + offset, Vector3.Up, color.ToVector4(), Vector2.Zero );
+
+				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 3 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
+				AddPoint( leftCorner + ( Vector3.UnitX * i + Vector3.UnitZ * ( dimension - 1 ) ) * step + offset, Vector3.Up, color.ToVector4(), Vector2.Zero );
 			}
 		}
 
 		//create a last ring
-		private void CreateLastRing(int dimension, Vector3 leftCorner, float step, Color color, bool offset) {
+		private void CreateLastRing(int dimension, Vector3 leftCorner, float step, Color color, bool jitter) {
+			Vector3 offset = Vector3.Zero;
+
 			for (int i = 1; i < dimension; i+=2) {
-				AddPoint( leftCorner + Vector3.UnitZ * step * i, Vector3.Up, color.ToVector4(), Vector2.Zero );
-				AddPoint( leftCorner + (Vector3.UnitZ * step * i + Vector3.UnitX * (dimension - 1) * step), Vector3.Up, color.ToVector4(), Vector2.Zero );
+				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 3 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
+				AddPoint( leftCorner + Vector3.UnitZ * step * i + offset, Vector3.Up, color.ToVector4(), Vector2.Zero );
+
+				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 3 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
+				AddPoint( leftCorner + ( Vector3.UnitZ * step * i + Vector3.UnitX * ( dimension - 1 ) * step ) + offset, Vector3.Up, color.ToVector4(), Vector2.Zero );
 			}
 			for (int i = 1; i < (dimension - 1); i+=2) {
-				AddPoint( leftCorner + Vector3.UnitX * step * i, Vector3.Up, color.ToVector4(), Vector2.Zero );
-				AddPoint( leftCorner + (Vector3.UnitX * i + Vector3.UnitZ * (dimension - 1)) * step, Vector3.Up, color.ToVector4(), Vector2.Zero );
+				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 3 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
+				AddPoint( leftCorner + Vector3.UnitX * step * i + offset, Vector3.Up, color.ToVector4(), Vector2.Zero );
+
+				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 3 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
+				AddPoint( leftCorner + ( Vector3.UnitX * i + Vector3.UnitZ * ( dimension - 1 ) ) * step + offset, Vector3.Up, color.ToVector4(), Vector2.Zero );
 			}
 		}
 
@@ -233,19 +248,13 @@ namespace GridDemo {
 			cbData.Projection = cam.GetProjectionMatrix(stereoEye);
 			cbData.View = cam.GetViewMatrix(stereoEye);
 			cbData.World = Matrix.Identity;
-			cbData.CameraPos = new Vector4(cam.FreeCamPosition, 0);
+			cbData.CameraPos = new Vector4(cam.FreeCamPosition.X, 0, cam.FreeCamPosition.Z, 0);
 //			cbData.ViewPos = new Vector4( cam.GetCameraMatrix( stereoEye ).TranslationVector, 1 );
 
 
 			constBuffer.SetData(cbData);
-
-			if ( followCamera ) {
-				Game.GraphicsDevice.PipelineState = factory[(int) RenderFlags.RELATIVE];
-			}
-			else {
-				Game.GraphicsDevice.PipelineState = factory[(int) RenderFlags.FIXED];
-			}
-
+			Game.GraphicsDevice.PipelineState = factory[(int) ( (followCamera) ? RenderFlags.RELATIVE : RenderFlags.FIXED)];
+			
 			Game.GraphicsDevice.PixelShaderConstants[0] = constBuffer;
 			Game.GraphicsDevice.VertexShaderConstants[0] = constBuffer;
 			Game.GraphicsDevice.PixelShaderSamplers[0] = SamplerState.LinearWrap;
