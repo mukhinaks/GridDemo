@@ -328,7 +328,7 @@
     <CSEntryPoint>CSMain</CSEntryPoint>
     <SourceFile>test.hlsl</SourceFile>
     <ShowPemutations>false</ShowPemutations>
-    <ListingPath>C:\Users\mukhi_000\GridDemo\GridDemo\Content\Temp\F896B223F730F30840F6325E60A3DDCB.html</ListingPath>
+    <ListingPath>D:\HPC\CloudDemo\GridDemo\GridDemo\Content\Temp\F896B223F730F30840F6325E60A3DDCB.html</ListingPath>
   </Asset>
   <Asset xsi:type="ImageFileTextureAsset">
     <AssetPath>particle3.tga</AssetPath>
@@ -374,6 +374,6 @@
     <CSEntryPoint>CSMain</CSEntryPoint>
     <SourceFile>points.hlsl</SourceFile>
     <ShowPemutations>false</ShowPemutations>
-    <ListingPath>C:\Users\mukhi_000\GridDemo\GridDemo\Content\Temp\069FE88E085130771DE0CA2D7D5ACC4D.html</ListingPath>
+    <ListingPath>D:\HPC\CloudDemo\GridDemo\GridDemo\Content\Temp\069FE88E085130771DE0CA2D7D5ACC4D.html</ListingPath>
   </Asset>
 </ArrayOfAsset>

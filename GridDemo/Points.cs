@@ -38,6 +38,8 @@ namespace GridDemo {
 		bool	randomness;
 		bool	followCamera;
 		int		numberOfCircles;
+		float	height;
+		float	size;
 
 
 		struct CBData {
@@ -63,8 +65,10 @@ namespace GridDemo {
 			public Vector3 Normal;
 			[Vertex("COLOR")]
 			public Vector4 Color;
-			[Vertex("TEXCOORD")]
+			[Vertex("TEXCOORD", 0)]
 			public Vector2 TexCoord;
+			[Vertex("TEXCOORD", 1)]
+			public float Size;
 		}
 
 		VertexBuffer vb;
@@ -74,7 +78,7 @@ namespace GridDemo {
 		/// Adds point at specified position
 		/// </summary>
 		/// <param name="p"></param>
-		public void AddPoint(Vector3 pos, Vector3 normal, Vector4 color, Vector2 texcoord) {
+		public void AddPoint(Vector3 pos, Vector3 normal, Vector4 color, Vector2 texcoord, float size) {
 			
 
 			var p = new PointVertex() {
@@ -82,47 +86,48 @@ namespace GridDemo {
 				Normal		= normal, 
 				Color		= color,
 				TexCoord	= texcoord,
+				Size		= size,
 			};
 
 			list.Add( p );
 		}
 
 		//create a standard rectangular ring
-		private void CreateRing(int dimension, Vector3 leftCorner, float step, Color color, bool jitter) {
+		private void CreateRing(int dimension, Vector3 leftCorner, float step, Color color, bool jitter, float size) {
 			Vector3 offset = Vector3.Zero;
 			for (int i = 0; i < dimension; i++) {
-				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 3 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
-				AddPoint( leftCorner + Vector3.UnitZ * step * i + offset, Vector3.Up, color.ToVector4(), Vector2.Zero );
+				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 2 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
+				AddPoint( leftCorner + Vector3.UnitZ * step * i + offset, Vector3.Up, color.ToVector4(), Vector2.Zero, size );
 
-				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 3 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
-				AddPoint( leftCorner + (Vector3.UnitZ * step * i + Vector3.UnitX * (dimension - 1) * step) + offset, Vector3.Up, color.ToVector4(), Vector2.Zero );
+				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 2 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
+				AddPoint( leftCorner + (Vector3.UnitZ * step * i + Vector3.UnitX * (dimension - 1) * step) + offset, Vector3.Up, color.ToVector4(), Vector2.Zero, size );
 			}
 			for (int i = 1; i < (dimension - 1); i++) {
-				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 3 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
-				AddPoint( leftCorner + Vector3.UnitX * step * i + offset, Vector3.Up, color.ToVector4(), Vector2.Zero );
+				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 2 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
+				AddPoint( leftCorner + Vector3.UnitX * step * i + offset, Vector3.Up, color.ToVector4(), Vector2.Zero, size );
 
-				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 3 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
-				AddPoint( leftCorner + ( Vector3.UnitX * i + Vector3.UnitZ * ( dimension - 1 ) ) * step + offset, Vector3.Up, color.ToVector4(), Vector2.Zero );
+				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 2 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
+				AddPoint( leftCorner + ( Vector3.UnitX * i + Vector3.UnitZ * ( dimension - 1 ) ) * step + offset, Vector3.Up, color.ToVector4(), Vector2.Zero, size );
 			}
 		}
 
 		//create a last ring
-		private void CreateLastRing(int dimension, Vector3 leftCorner, float step, Color color, bool jitter) {
+		private void CreateLastRing(int dimension, Vector3 leftCorner, float step, Color color, bool jitter, float size) {
 			Vector3 offset = Vector3.Zero;
 
 			for (int i = 1; i < dimension; i+=2) {
-				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 3 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
-				AddPoint( leftCorner + Vector3.UnitZ * step * i + offset, Vector3.Up, color.ToVector4(), Vector2.Zero );
+				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 2 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
+				AddPoint( leftCorner + Vector3.UnitZ * step * i + offset, Vector3.Up, color.ToVector4(), Vector2.Zero, size );
 
-				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 3 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
-				AddPoint( leftCorner + ( Vector3.UnitZ * step * i + Vector3.UnitX * ( dimension - 1 ) * step ) + offset, Vector3.Up, color.ToVector4(), Vector2.Zero );
+				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 2 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
+				AddPoint( leftCorner + ( Vector3.UnitZ * step * i + Vector3.UnitX * ( dimension - 1 ) * step ) + offset, Vector3.Up, color.ToVector4(), Vector2.Zero, size );
 			}
 			for (int i = 1; i < (dimension - 1); i+=2) {
-				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 3 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
-				AddPoint( leftCorner + Vector3.UnitX * step * i + offset, Vector3.Up, color.ToVector4(), Vector2.Zero );
+				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 2 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
+				AddPoint( leftCorner + Vector3.UnitX * step * i + offset, Vector3.Up, color.ToVector4(), Vector2.Zero, size );
 
-				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 3 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
-				AddPoint( leftCorner + ( Vector3.UnitX * i + Vector3.UnitZ * ( dimension - 1 ) ) * step + offset, Vector3.Up, color.ToVector4(), Vector2.Zero );
+				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 2 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
+				AddPoint( leftCorner + ( Vector3.UnitX * i + Vector3.UnitZ * ( dimension - 1 ) ) * step + offset, Vector3.Up, color.ToVector4(), Vector2.Zero, size );
 			}
 		}
 
@@ -131,55 +136,11 @@ namespace GridDemo {
 		/// </summary>
 		public override void Initialize()
 		{
-
-			var gc = Game.GetService<GridConfigService>();
-			distanceBetweenLayers	= gc.Config.DistanceBetweenLayers;
-			numberOfLayers			= gc.Config.NumberOfLayers;
-			numberOfCircles			= gc.Config.NumberOfCircles;
-			randomness				= gc.Config.Randomness;
-			followCamera			= gc.Config.FollowCamera;
-			step					= gc.Config.Step;
-
 			constBuffer = new ConstantBuffer(Game.GraphicsDevice, typeof(CBData));
-
-			vb = new VertexBuffer( Game.GraphicsDevice, typeof( PointVertex ), 128*128 );
+			
+			vb = new VertexBuffer( Game.GraphicsDevice, typeof( PointVertex ), 128*128 ); 
 			list = new List<PointVertex>();
-
-			//grid
-			Vector3 center = new Vector3( 0, 10, 0 );
-			
-			for ( int i = 0; i < numberOfLayers; i++ ) {
-				Vector3 start = center + Vector3.UnitY * distanceBetweenLayers * i;
-				step = gc.Config.Step;
-
-				//add inside square
-				AddPoint( start, Vector3.Up, Color.White.ToVector4(), Vector2.Zero );
-				start -= Vector3.UnitX + Vector3.UnitZ;
-				CreateRing( 3, start, step, Color.White, randomness );
-				start -= Vector3.UnitX + Vector3.UnitZ;
-
-				//create circles
-				int currentRing = 1;
-				while ( currentRing <= numberOfCircles ) {
-					CreateRing( 5, start, step, Color.Red, randomness );
-					start -= ( Vector3.UnitX + Vector3.UnitZ ) * step;
-					CreateRing( 7, start, step, Color.Red, randomness );
-					start -= ( Vector3.UnitX + Vector3.UnitZ ) * step;
-					CreateLastRing( 9, start, step, Color.LightCyan, randomness );
-					step = step * 2;
-					currentRing++;
-				}
-
-				numberOfPoints = list.Count;
-				Log.Message( "{0}", numberOfPoints );
-				Log.Message( "{0}", start );
-			}
-			
-			//fill vertex buffer
-			numberOfPoints = list.Count;
-			Log.Message( "{0}", numberOfPoints );
-			vb.SetData( list.ToArray(), 0, numberOfPoints );
-			
+						
 			base.Initialize();
 
 			Game.Reloading += Game_Reloading;
@@ -190,6 +151,57 @@ namespace GridDemo {
 
 
 		void Game_Reloading(object sender, EventArgs e) {
+			//SafeDispose( ref factory );
+			//SafeDispose( ref vb );
+			list.Clear();
+			
+			var gc = Game.GetService<GridConfigService>();
+			distanceBetweenLayers	= gc.Config.DistanceBetweenLayers;
+			numberOfLayers			= gc.Config.NumberOfLayers;
+			numberOfCircles			= gc.Config.NumberOfCircles;
+			randomness				= gc.Config.Randomness;
+			followCamera			= gc.Config.FollowCamera;
+			step					= gc.Config.Step;
+			height					= gc.Config.Height;
+			size					= gc.Config.Size;
+
+			//grid
+			Vector3 center = new Vector3( Game.GetService<Camera>().FreeCamPosition.X, height, Game.GetService<Camera>().FreeCamPosition.Z );
+			
+			for ( int i = 0; i < numberOfLayers; i++ ) {
+				Vector3 start = center + Vector3.UnitY * distanceBetweenLayers * i;
+				step = gc.Config.Step;
+
+				//add inside square
+				AddPoint( start, Vector3.Up, Color.White.ToVector4(), Vector2.Zero, size  );
+				start -= (Vector3.UnitX + Vector3.UnitZ) * step;
+				CreateRing( 3, start, step, Color.White, randomness, size   );
+				start -= (Vector3.UnitX + Vector3.UnitZ) * step;
+
+				//create circles
+				int currentRing = 1;
+				while ( currentRing <= numberOfCircles ) {
+					
+					CreateRing( 5, start, step, Color.Red, randomness, size  );
+					start -= ( Vector3.UnitX + Vector3.UnitZ ) * step;
+					CreateRing( 7, start, step, Color.Red, randomness, size );
+					start -= ( Vector3.UnitX + Vector3.UnitZ ) * step;
+					CreateLastRing( 9, start, step, Color.LightCyan, randomness, size );
+					step = step * 2;
+					size = size * 2;
+					currentRing++;
+				}
+				size = gc.Config.Size;
+				numberOfPoints = list.Count;
+				Log.Message( "{0}", numberOfPoints );
+				Log.Message( "{0}", start );
+			}
+			
+			//fill vertex buffer
+			numberOfPoints = list.Count;
+			Log.Message( "{0}", numberOfPoints );
+			vb.SetData( list.ToArray(), 0, numberOfPoints );
+
 			uberShader = Game.Content.Load<Ubershader>("points");
 			factory = new StateFactory( uberShader, typeof( RenderFlags ), (ps, i) => EnumAction( ps, (RenderFlags) i ) );
 			texture = Game.Content.Load<Texture2D>("tex");
@@ -257,6 +269,7 @@ namespace GridDemo {
 			
 			Game.GraphicsDevice.PixelShaderConstants[0] = constBuffer;
 			Game.GraphicsDevice.VertexShaderConstants[0] = constBuffer;
+			Game.GraphicsDevice.GeometryShaderConstants[0] = constBuffer;
 			Game.GraphicsDevice.PixelShaderSamplers[0] = SamplerState.LinearWrap;
 			Game.GraphicsDevice.PixelShaderResources[0] = texture;
 

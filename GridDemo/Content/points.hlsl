@@ -22,6 +22,15 @@ struct VS_IN {
 	float3 Normal 	: NORMAL;
 	float4 Color 	: COLOR;
 	float2 TexCoord : TEXCOORD0;
+	float  Size		: TEXCOORD1;
+};
+
+struct OUT_PARTICLE {
+	float4	Position	: POSITION;
+	float4	Color		: COLOR;
+	float2	TexCoord	: TEXCOORD0;
+	float	Size		: TEXCOORD1;
+	float3	WNormal		: NORMAL;
 };
 
 struct PS_IN {
@@ -43,30 +52,76 @@ $ubershader RELATIVE|FIXED
 /*-----------------------------------------------------------------------------
 	Shader functions :
 -----------------------------------------------------------------------------*/
-PS_IN VSMain( VS_IN input )
+OUT_PARTICLE VSMain( VS_IN input )
 {
-	PS_IN output 	= (PS_IN)0;
-	
+	OUT_PARTICLE output 	= (OUT_PARTICLE)0;
+
 	float4 	pos		=	float4( input.Position, 1 );
 #ifdef FIXED
 	float4	wPos	=	mul( pos,  Batch.World 		);
-	float4	vPos	=	mul( wPos, Batch.View 		);
+	float4	vPos	=	mul( pos, Batch.View 		);
 #endif
 
 #ifdef RELATIVE
 	float4	vPos	=	mul( pos + Batch.CameraPos, Batch.View 		);
 #endif
-	float4	pPos	=	mul( vPos, Batch.Projection );
+	//float4	pPos	=	mul( vPos, Batch.Projection );
 	float4	normal	=	mul( float4(input.Normal,0),  Batch.World 		);
 	
-	output.Position = pPos;
+	output.Position = vPos;
 	output.Color 	= input.Color;
 	output.TexCoord	= input.TexCoord;
 	output.WNormal	= normalize(normal);
+	output.Size		= input.Size / 2; 
 	
 	return output;
 }
 
+[maxvertexcount(6)]
+void GSMain( point OUT_PARTICLE inputPoint[1], inout TriangleStream<PS_IN> outputStream )
+{
+	PS_IN p0, p1, p2, p3;
+	
+	OUT_PARTICLE prt = inputPoint[0];	
+	
+	float  sz 		=   prt.Size;
+	
+	float4 color	=	prt.Color;
+	float4 pp		=	prt.Position;
+//	float4 pp		=	mul(position, Batch.View); 
+	
+	p0.Position	= mul( pp + float4( sz, sz, 0, 0), Batch.Projection );
+	p0.TexCoord	= float2(1,1);
+	p0.Color 	= color;
+	p0.WNormal	= prt.WNormal;
+	
+	p1.Position	= mul( pp + float4( -sz, sz, 0, 0), Batch.Projection );
+	p1.TexCoord	= float2(0,1);
+	p1.Color 	= color;
+	p1.WNormal	= prt.WNormal;
+	
+	p2.Position	= mul( pp + float4( -sz, -sz, 0, 0), Batch.Projection );
+	p2.TexCoord	= float2(0,0);
+	p2.Color 	= color;
+	p2.WNormal	= prt.WNormal;
+	
+	p3.Position	= mul( pp + float4( sz, -sz, 0, 0), Batch.Projection );
+	p3.TexCoord	= float2(1,0);
+	p3.Color 	= color;
+	p3.WNormal	= prt.WNormal;
+
+	outputStream.Append(p0);
+	outputStream.Append(p1);
+	outputStream.Append(p2);
+	
+	outputStream.RestartStrip();
+
+	outputStream.Append(p0);
+	outputStream.Append(p2);
+	outputStream.Append(p3);
+
+	outputStream.RestartStrip();
+}
 
 float4 PSMain( PS_IN input ) : SV_Target
 {

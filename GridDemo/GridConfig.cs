@@ -31,6 +31,12 @@ namespace GridDemo {
 
 			[Category( "Points" )]
 			public int NumberOfCircles { get; set; }
+						
+			[Category( "Points" )]
+			public float Height { get; set; }
+			
+			[Category( "Points" )]
+			public float Size { get; set; }
 
 			[Category( "Points" )]
 			public float Step { get; set; }
@@ -42,15 +48,17 @@ namespace GridDemo {
 			public bool FollowCamera { get; set; }
 
 			public GridConfig(){
-				MaxRadius = 300;
-				RadiusOfFirstCircle = 10;
-				InitialSize = 10;
-				NumberOfLayers = 1;
-				DistanceBetweenLayers = 50;
-				NumberOfCircles = 8;
-				Step = 1;
-				Randomness = false;
-				FollowCamera = false;
+				MaxRadius				= 300;
+				RadiusOfFirstCircle		= 10;
+				InitialSize				= 10;
+				NumberOfLayers			= 1;
+				DistanceBetweenLayers	= 50;
+				NumberOfCircles			= 8;
+				Step					= 1;
+				Randomness				= false;
+				FollowCamera			= false;
+				Size					= 0.5f;
+				Height					= 50;
 			}
 		}
 
