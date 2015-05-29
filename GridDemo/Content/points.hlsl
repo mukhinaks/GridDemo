@@ -75,7 +75,7 @@ OUT_PARTICLE VSMain( VS_IN input )
 	output.Color 	= input.Color;
 	output.TexCoord	= input.TexCoord;
 	output.WNormal	= normalize(normal);
-	output.Size		= input.Size / 2; 
+	output.Size		= input.Size / 2 ; //* Noise.Sample( Sampler, float2(0, 0));//input.Position.x / 1024, input.Position.z / 1024) ); 
 	output.Angle	= input.Angle;
 	
 	return output;
@@ -88,11 +88,11 @@ void GSMain( point OUT_PARTICLE inputPoint[1], inout TriangleStream<PS_IN> outpu
 	
 	OUT_PARTICLE prt = inputPoint[0];	
 	
-	float  sz 		=   prt.Size;
-	
+	float  sz 		=   prt.Size;	
 	float4 color	=	prt.Color;
 	float4 pp		=	prt.Position;
 //	float4 pp		=	mul(position, Batch.View); 
+
 	float  a		=	prt.Angle;	
 	float2x2	m	=	float2x2( cos(a), sin(a), -sin(a), cos(a) );
 	

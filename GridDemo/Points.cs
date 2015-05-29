@@ -28,6 +28,7 @@ namespace GridDemo {
 		Ubershader uberShader;
 		StateFactory factory;
 		Texture2D texture;
+		Texture2D noise;
 		int numberOfPoints = 0;
 		Random random = new Random();
 
@@ -211,6 +212,7 @@ namespace GridDemo {
 			uberShader = Game.Content.Load<Ubershader>("points");
 			factory = new StateFactory( uberShader, typeof( RenderFlags ), (ps, i) => EnumAction( ps, (RenderFlags) i ) );
 			texture = Game.Content.Load<Texture2D>("cloud1");
+			noise = Game.Content.Load<Texture2D>("noise");
 		}
 
 		void EnumAction(PipelineState ps, RenderFlags flag) {
@@ -275,6 +277,8 @@ namespace GridDemo {
 			
 			Game.GraphicsDevice.PixelShaderConstants[0] = constBuffer;
 			Game.GraphicsDevice.VertexShaderConstants[0] = constBuffer;
+			Game.GraphicsDevice.VertexShaderSamplers[0] = SamplerState.LinearWrap;
+			Game.GraphicsDevice.VertexShaderResources[1] = noise;
 			Game.GraphicsDevice.GeometryShaderConstants[0] = constBuffer;
 			Game.GraphicsDevice.PixelShaderSamplers[0] = SamplerState.LinearWrap;
 			Game.GraphicsDevice.PixelShaderResources[0] = texture;
