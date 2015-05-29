@@ -46,6 +46,7 @@ struct PS_IN {
 cbuffer 		CBBatch 	: 	register(b0) { BATCH Batch : packoffset( c0 ); }	
 SamplerState	Sampler		: 	register(s0);
 Texture2D		Texture 	: 	register(t0);
+Texture2D		Noise		:	register(t1);
 
 #if 0
 $ubershader RELATIVE|FIXED
@@ -130,7 +131,7 @@ void GSMain( point OUT_PARTICLE inputPoint[1], inout TriangleStream<PS_IN> outpu
 
 float4 PSMain( PS_IN input ) : SV_Target
 {
-	return input.Color;
+	return Texture.Sample( Sampler, input.TexCoord ) * 0.5; //input.Color;
 }
 
 

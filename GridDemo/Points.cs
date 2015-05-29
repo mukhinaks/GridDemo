@@ -210,14 +210,14 @@ namespace GridDemo {
 
 			uberShader = Game.Content.Load<Ubershader>("points");
 			factory = new StateFactory( uberShader, typeof( RenderFlags ), (ps, i) => EnumAction( ps, (RenderFlags) i ) );
-			texture = Game.Content.Load<Texture2D>("tex");
+			texture = Game.Content.Load<Texture2D>("cloud1");
 		}
 
 		void EnumAction(PipelineState ps, RenderFlags flag) {
 			ps.Primitive = Primitive.PointList;
 			ps.VertexInputElements = VertexInputElement.FromStructure<PointVertex>();
 			ps.DepthStencilState = DepthStencilState.Readonly;
-
+			ps.BlendState			=	BlendState.Screen;
 		}
 
 
