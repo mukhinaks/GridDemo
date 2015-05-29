@@ -30,18 +30,28 @@ namespace GridDemo {
 		Texture2D texture;
 		int numberOfPoints = 0;
 
+		//parameters of grid
+		int		numberOfLayers;
+		float	distanceBetweenLayers;
+		float	step;
+		bool	randomness;
+		bool	followCamera;
+		int		numberOfCircles;
+
 
 		struct CBData {
 			public Fusion.Mathematics.Matrix Projection;
 			public Fusion.Mathematics.Matrix View;
 			public Fusion.Mathematics.Matrix World;
-			public Vector4 ViewPos;
+			public Vector4 CameraPos;
 
 		}
 
 
 		enum RenderFlags {
 			None,
+			RELATIVE	= 0x1,
+			FIXED		= 0x2,
 		}
 
 
@@ -76,7 +86,9 @@ namespace GridDemo {
 			list.Add( p );
 		}
 
-		private void CreateRing(int dimension, Vector3 leftCorner, int step, Color color) {
+		//create a standard rectangular ring
+		private void CreateRing(int dimension, Vector3 leftCorner, float step, Color color, bool offset) {
+
 			for (int i = 0; i < dimension; i++) {
 				AddPoint( leftCorner + Vector3.UnitZ * step * i, Vector3.Up, color.ToVector4(), Vector2.Zero );
 				AddPoint( leftCorner + (Vector3.UnitZ * step * i + Vector3.UnitX * (dimension - 1) * step), Vector3.Up, color.ToVector4(), Vector2.Zero );
@@ -87,7 +99,8 @@ namespace GridDemo {
 			}
 		}
 
-		private void CreateLastRing(int dimension, Vector3 leftCorner, int step, Color color) {
+		//create a last ring
+		private void CreateLastRing(int dimension, Vector3 leftCorner, float step, Color color, bool offset) {
 			for (int i = 1; i < dimension; i+=2) {
 				AddPoint( leftCorner + Vector3.UnitZ * step * i, Vector3.Up, color.ToVector4(), Vector2.Zero );
 				AddPoint( leftCorner + (Vector3.UnitZ * step * i + Vector3.UnitX * (dimension - 1) * step), Vector3.Up, color.ToVector4(), Vector2.Zero );
@@ -104,36 +117,52 @@ namespace GridDemo {
 		public override void Initialize()
 		{
 
+			var gc = Game.GetService<GridConfigService>();
+			distanceBetweenLayers	= gc.Config.DistanceBetweenLayers;
+			numberOfLayers			= gc.Config.NumberOfLayers;
+			numberOfCircles			= gc.Config.NumberOfCircles;
+			randomness				= gc.Config.Randomness;
+			followCamera			= gc.Config.FollowCamera;
+			step					= gc.Config.Step;
+
 			constBuffer = new ConstantBuffer(Game.GraphicsDevice, typeof(CBData));
 
 			vb = new VertexBuffer( Game.GraphicsDevice, typeof( PointVertex ), 128*128 );
 			list = new List<PointVertex>();
 
 			//grid
-			Vector3 start = new Vector3( 0, 50, 0 );
-			int step = 1;
-
-			//add inside square
-			CreateRing( 1, start, step, Color.White );
-			start -= Vector3.UnitX + Vector3.UnitZ;
-			CreateRing( 3, start, step, Color.White );
-			start -= Vector3.UnitX + Vector3.UnitZ;
+			Vector3 center = new Vector3( 0, 10, 0 );
 			
-			//create circles
-			int levels = 8;
-			int currentRing = 1;
-			while (currentRing <= levels){
-				CreateRing( 5, start, step, Color.Red );
-				start -= (Vector3.UnitX + Vector3.UnitZ) * step;
-				CreateRing( 7, start, step , Color.Red);
-				start -= (Vector3.UnitX + Vector3.UnitZ) * step;
-				CreateLastRing( 9, start, step, Color.LightCyan );
-				step = step * 2;
-				currentRing++;
-			}
+			for ( int i = 0; i < numberOfLayers; i++ ) {
+				Vector3 start = center + Vector3.UnitY * distanceBetweenLayers * i;
+				step = gc.Config.Step;
 
+				//add inside square
+				AddPoint( start, Vector3.Up, Color.White.ToVector4(), Vector2.Zero );
+				start -= Vector3.UnitX + Vector3.UnitZ;
+				CreateRing( 3, start, step, Color.White, randomness );
+				start -= Vector3.UnitX + Vector3.UnitZ;
+
+				//create circles
+				int currentRing = 1;
+				while ( currentRing <= numberOfCircles ) {
+					CreateRing( 5, start, step, Color.Red, randomness );
+					start -= ( Vector3.UnitX + Vector3.UnitZ ) * step;
+					CreateRing( 7, start, step, Color.Red, randomness );
+					start -= ( Vector3.UnitX + Vector3.UnitZ ) * step;
+					CreateLastRing( 9, start, step, Color.LightCyan, randomness );
+					step = step * 2;
+					currentRing++;
+				}
+
+				numberOfPoints = list.Count;
+				Log.Message( "{0}", numberOfPoints );
+				Log.Message( "{0}", start );
+			}
+			
 			//fill vertex buffer
 			numberOfPoints = list.Count;
+			Log.Message( "{0}", numberOfPoints );
 			vb.SetData( list.ToArray(), 0, numberOfPoints );
 			
 			base.Initialize();
@@ -204,12 +233,18 @@ namespace GridDemo {
 			cbData.Projection = cam.GetProjectionMatrix(stereoEye);
 			cbData.View = cam.GetViewMatrix(stereoEye);
 			cbData.World = Matrix.Identity;
-			cbData.ViewPos = new Vector4(cam.GetCameraMatrix(stereoEye).TranslationVector, 1);
+			cbData.CameraPos = new Vector4(cam.FreeCamPosition, 0);
+//			cbData.ViewPos = new Vector4( cam.GetCameraMatrix( stereoEye ).TranslationVector, 1 );
 
 
 			constBuffer.SetData(cbData);
-			
-			Game.GraphicsDevice.PipelineState = factory[0];
+
+			if ( followCamera ) {
+				Game.GraphicsDevice.PipelineState = factory[(int) RenderFlags.RELATIVE];
+			}
+			else {
+				Game.GraphicsDevice.PipelineState = factory[(int) RenderFlags.FIXED];
+			}
 
 			Game.GraphicsDevice.PixelShaderConstants[0] = constBuffer;
 			Game.GraphicsDevice.VertexShaderConstants[0] = constBuffer;

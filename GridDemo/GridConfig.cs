@@ -23,10 +23,34 @@ namespace GridDemo {
 			[Category("Grid")]
 			public int InitialSize { get; set; }
 
+			[Category( "Points" )]
+			public int NumberOfLayers { get; set; }
+
+			[Category( "Points" )]
+			public float DistanceBetweenLayers { get; set; }
+
+			[Category( "Points" )]
+			public int NumberOfCircles { get; set; }
+
+			[Category( "Points" )]
+			public float Step { get; set; }
+
+			[Category( "Points" )]
+			public bool Randomness { get; set; }
+
+			[Category( "Points" )]
+			public bool FollowCamera { get; set; }
+
 			public GridConfig(){
 				MaxRadius = 300;
 				RadiusOfFirstCircle = 10;
 				InitialSize = 10;
+				NumberOfLayers = 1;
+				DistanceBetweenLayers = 50;
+				NumberOfCircles = 8;
+				Step = 1;
+				Randomness = false;
+				FollowCamera = false;
 			}
 		}
 

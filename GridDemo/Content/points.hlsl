@@ -4,7 +4,7 @@ struct BATCH {
 	float4x4	View			;
 	float4x4	World			;
 	
-	float4		ViewPos			;
+	float4		CameraPos		;
 	
 	float4		SkyLightDir		;
 	float4		SkyLightColor	;
@@ -37,7 +37,7 @@ SamplerState	Sampler		: 	register(s0);
 Texture2D		Texture 	: 	register(t0);
 
 #if 0
-$ubershader
+$ubershader RELATIVE|FIXED
 #endif
  
 /*-----------------------------------------------------------------------------
@@ -48,8 +48,14 @@ PS_IN VSMain( VS_IN input )
 	PS_IN output 	= (PS_IN)0;
 	
 	float4 	pos		=	float4( input.Position, 1 );
+#ifdef FIXED
 	float4	wPos	=	mul( pos,  Batch.World 		);
 	float4	vPos	=	mul( wPos, Batch.View 		);
+#endif
+
+#ifdef RELATIVE
+	float4	vPos	=	mul( pos + Batch.CameraPos, Batch.View 		);
+#endif
 	float4	pPos	=	mul( vPos, Batch.Projection );
 	float4	normal	=	mul( float4(input.Normal,0),  Batch.World 		);
 	
