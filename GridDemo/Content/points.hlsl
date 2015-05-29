@@ -23,6 +23,7 @@ struct VS_IN {
 	float4 Color 	: COLOR;
 	float2 TexCoord : TEXCOORD0;
 	float  Size		: TEXCOORD1;
+	float  Angle	: TEXCOORD2;
 };
 
 struct OUT_PARTICLE {
@@ -30,6 +31,7 @@ struct OUT_PARTICLE {
 	float4	Color		: COLOR;
 	float2	TexCoord	: TEXCOORD0;
 	float	Size		: TEXCOORD1;
+	float   Angle		: TEXCOORD2;
 	float3	WNormal		: NORMAL;
 };
 
@@ -73,6 +75,7 @@ OUT_PARTICLE VSMain( VS_IN input )
 	output.TexCoord	= input.TexCoord;
 	output.WNormal	= normalize(normal);
 	output.Size		= input.Size / 2; 
+	output.Angle	= input.Angle;
 	
 	return output;
 }
@@ -89,23 +92,25 @@ void GSMain( point OUT_PARTICLE inputPoint[1], inout TriangleStream<PS_IN> outpu
 	float4 color	=	prt.Color;
 	float4 pp		=	prt.Position;
 //	float4 pp		=	mul(position, Batch.View); 
+	float  a		=	prt.Angle;	
+	float2x2	m	=	float2x2( cos(a), sin(a), -sin(a), cos(a) );
 	
-	p0.Position	= mul( pp + float4( sz, sz, 0, 0), Batch.Projection );
+	p0.Position	= mul( pp + float4( mul(float2( sz, sz), m), 0, 0), Batch.Projection );
 	p0.TexCoord	= float2(1,1);
 	p0.Color 	= color;
 	p0.WNormal	= prt.WNormal;
 	
-	p1.Position	= mul( pp + float4( -sz, sz, 0, 0), Batch.Projection );
+	p1.Position	= mul( pp + float4( mul(float2(-sz, sz), m), 0, 0), Batch.Projection );
 	p1.TexCoord	= float2(0,1);
 	p1.Color 	= color;
 	p1.WNormal	= prt.WNormal;
 	
-	p2.Position	= mul( pp + float4( -sz, -sz, 0, 0), Batch.Projection );
+	p2.Position	= mul( pp + float4( mul(float2(-sz,-sz), m), 0, 0), Batch.Projection );
 	p2.TexCoord	= float2(0,0);
 	p2.Color 	= color;
 	p2.WNormal	= prt.WNormal;
 	
-	p3.Position	= mul( pp + float4( sz, -sz, 0, 0), Batch.Projection );
+	p3.Position	= mul( pp + float4( mul(float2( sz,-sz), m), 0, 0), Batch.Projection );
 	p3.TexCoord	= float2(1,0);
 	p3.Color 	= color;
 	p3.WNormal	= prt.WNormal;

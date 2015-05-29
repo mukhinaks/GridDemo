@@ -69,6 +69,8 @@ namespace GridDemo {
 			public Vector2 TexCoord;
 			[Vertex("TEXCOORD", 1)]
 			public float Size;
+			[Vertex("TEXCOORD", 2)]
+			public float Angle;
 		}
 
 		VertexBuffer vb;
@@ -87,6 +89,7 @@ namespace GridDemo {
 				Color		= color,
 				TexCoord	= texcoord,
 				Size		= size,
+				Angle		= random.NextFloat( -MathUtil.Pi, MathUtil.Pi ),
 			};
 
 			list.Add( p );
@@ -96,17 +99,17 @@ namespace GridDemo {
 		private void CreateRing(int dimension, Vector3 leftCorner, float step, Color color, bool jitter, float size) {
 			Vector3 offset = Vector3.Zero;
 			for (int i = 0; i < dimension; i++) {
-				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 2 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
+				offset = ( jitter ) ? new Vector3( random.NextFloat( -(step / 2), step / 2 ), 0, random.NextFloat( -(step / 2), step / 2 ) ) : offset;
 				AddPoint( leftCorner + Vector3.UnitZ * step * i + offset, Vector3.Up, color.ToVector4(), Vector2.Zero, size );
 
-				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 2 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
+				offset = ( jitter ) ? new Vector3( random.NextFloat( -(step / 2), step / 2 ), 0, random.NextFloat( -(step / 2), step / 2 ) ) : offset;
 				AddPoint( leftCorner + (Vector3.UnitZ * step * i + Vector3.UnitX * (dimension - 1) * step) + offset, Vector3.Up, color.ToVector4(), Vector2.Zero, size );
 			}
 			for (int i = 1; i < (dimension - 1); i++) {
-				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 2 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
+				offset = ( jitter ) ? new Vector3( random.NextFloat( -(step / 2), step / 2 ), 0, random.NextFloat( -(step / 2), step / 2 ) ) : offset;
 				AddPoint( leftCorner + Vector3.UnitX * step * i + offset, Vector3.Up, color.ToVector4(), Vector2.Zero, size );
 
-				offset = ( jitter ) ? new Vector3( random.NextFloat( 0, step / 2 ), 0, random.NextFloat( 0, step / 3 ) ) : offset;
+				offset = ( jitter ) ? new Vector3( random.NextFloat( -(step / 2), step / 2 ), 0, random.NextFloat( -(step / 2), step / 2 ) ) : offset;
 				AddPoint( leftCorner + ( Vector3.UnitX * i + Vector3.UnitZ * ( dimension - 1 ) ) * step + offset, Vector3.Up, color.ToVector4(), Vector2.Zero, size );
 			}
 		}
@@ -165,8 +168,12 @@ namespace GridDemo {
 			height					= gc.Config.Height;
 			size					= gc.Config.Size;
 
+			var cam = Game.GetService<Camera>();
+				Log.Message( "{0}", cam.FreeCamPosition );
+
 			//grid
-			Vector3 center = new Vector3( Game.GetService<Camera>().FreeCamPosition.X, height, Game.GetService<Camera>().FreeCamPosition.Z );
+			Vector3 center = new Vector3( 0, height, 0 );
+			Log.Message( "{0}", center);
 			
 			for ( int i = 0; i < numberOfLayers; i++ ) {
 				Vector3 start = center + Vector3.UnitY * distanceBetweenLayers * i;
@@ -194,7 +201,6 @@ namespace GridDemo {
 				size = gc.Config.Size;
 				numberOfPoints = list.Count;
 				Log.Message( "{0}", numberOfPoints );
-				Log.Message( "{0}", start );
 			}
 			
 			//fill vertex buffer
