@@ -277,7 +277,6 @@ namespace GridDemo {
 			
 			Game.GraphicsDevice.PixelShaderConstants[0] = constBuffer;
 			Game.GraphicsDevice.VertexShaderConstants[0] = constBuffer;
-			Game.GraphicsDevice.VertexShaderSamplers[1] = SamplerState.LinearWrap;
 			Game.GraphicsDevice.VertexShaderResources[1] = noise;
 			Game.GraphicsDevice.GeometryShaderConstants[0] = constBuffer;
 			Game.GraphicsDevice.PixelShaderSamplers[0] = SamplerState.LinearWrap;

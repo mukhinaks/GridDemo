@@ -45,7 +45,6 @@ struct PS_IN {
 
 cbuffer 		CBBatch 	: 	register(b0) { BATCH Batch : packoffset( c0 ); }	
 SamplerState	Sampler		: 	register(s0);
-SamplerState	NoiseSampler		: 	register(s1);
 Texture2D		Texture 	: 	register(t0);
 Texture2D		Noise		:	register(t1);
 
@@ -73,12 +72,12 @@ OUT_PARTICLE VSMain( VS_IN input )
 	float4	normal	=	mul( float4(input.Normal,0),  Batch.World 		);
 	
 	output.Position = vPos;
-	output.Color 	= input.Color * Noise[float2( vPos.x + 256, vPos.z + 256)];
+	output.Color 	= input.Color * Noise[float2( pos.x + 256, pos.z + 256)];
 //	output.Color 	= input.Color * Noise[float2(input.Position.x + 512, input.Position.z + 512)];
 	output.TexCoord	= input.TexCoord;
 	output.WNormal	= normalize(normal);
 	uint2 pos_xy = { 0, 0 } ;
-	output.Size		= input.Size / 2 * pow(Noise[float2(input.Position.x + 256, input.Position.z + 256)], 2);
+	output.Size		= input.Size / 2 * pow(Noise[float2(pos.x + 256, pos.z + 256)], 2);
 	output.Angle	= input.Angle;
 	
 	return output;
