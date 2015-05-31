@@ -87,7 +87,7 @@ namespace GridDemo {
 			var p = new PointVertex() {
 				Position	= pos,
 				Normal		= normal, 
-				Color		= color,
+				Color		= Color.White.ToVector4(),//color,
 				TexCoord	= texcoord,
 				Size		= size,
 				Angle		= random.NextFloat( -MathUtil.Pi, MathUtil.Pi ),
@@ -277,11 +277,12 @@ namespace GridDemo {
 			
 			Game.GraphicsDevice.PixelShaderConstants[0] = constBuffer;
 			Game.GraphicsDevice.VertexShaderConstants[0] = constBuffer;
-			Game.GraphicsDevice.VertexShaderSamplers[0] = SamplerState.LinearWrap;
+			Game.GraphicsDevice.VertexShaderSamplers[1] = SamplerState.LinearWrap;
 			Game.GraphicsDevice.VertexShaderResources[1] = noise;
 			Game.GraphicsDevice.GeometryShaderConstants[0] = constBuffer;
 			Game.GraphicsDevice.PixelShaderSamplers[0] = SamplerState.LinearWrap;
 			Game.GraphicsDevice.PixelShaderResources[0] = texture;
+			Game.GraphicsDevice.PixelShaderResources[1] = noise;
 
 			// setup data and draw points
 			Game.GraphicsDevice.SetupVertexInput( vb, null );

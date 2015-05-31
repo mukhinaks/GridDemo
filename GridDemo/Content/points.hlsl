@@ -45,6 +45,7 @@ struct PS_IN {
 
 cbuffer 		CBBatch 	: 	register(b0) { BATCH Batch : packoffset( c0 ); }	
 SamplerState	Sampler		: 	register(s0);
+SamplerState	NoiseSampler		: 	register(s1);
 Texture2D		Texture 	: 	register(t0);
 Texture2D		Noise		:	register(t1);
 
@@ -72,10 +73,12 @@ OUT_PARTICLE VSMain( VS_IN input )
 	float4	normal	=	mul( float4(input.Normal,0),  Batch.World 		);
 	
 	output.Position = vPos;
-	output.Color 	= input.Color;
+	output.Color 	= input.Color * Noise[float2( vPos.x + 256, vPos.z + 256)];
+//	output.Color 	= input.Color * Noise[float2(input.Position.x + 512, input.Position.z + 512)];
 	output.TexCoord	= input.TexCoord;
 	output.WNormal	= normalize(normal);
-	output.Size		= input.Size / 2 ; //* Noise.Sample( Sampler, float2(0, 0));//input.Position.x / 1024, input.Position.z / 1024) ); 
+	uint2 pos_xy = { 0, 0 } ;
+	output.Size		= input.Size / 2 * pow(Noise[float2(input.Position.x + 256, input.Position.z + 256)], 2);
 	output.Angle	= input.Angle;
 	
 	return output;
@@ -131,7 +134,7 @@ void GSMain( point OUT_PARTICLE inputPoint[1], inout TriangleStream<PS_IN> outpu
 
 float4 PSMain( PS_IN input ) : SV_Target
 {
-	return Texture.Sample( Sampler, input.TexCoord ) * 0.5; //input.Color;
+	return Texture.Sample( Sampler, input.TexCoord ) * 0.25 * input.Color;
 }
 
 

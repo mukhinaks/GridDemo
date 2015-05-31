@@ -31,7 +31,7 @@
     <CSEntryPoint>CSMain</CSEntryPoint>
     <SourceFile>debugRender.hlsl</SourceFile>
     <ShowPemutations>false</ShowPemutations>
-    <ListingPath>D:\HPC\CloudDemo\GridDemo\GridDemo\Content\Temp\0EC7C2D14F65EFBA65B361728EE70CD3.html</ListingPath>
+    <ListingPath>C:\Users\mukhi_000\GridDemo\GridDemo\Content\Temp\0EC7C2D14F65EFBA65B361728EE70CD3.html</ListingPath>
   </Asset>
   <Asset xsi:type="UbershaderAsset">
     <AssetPath>spriteBatch.hlsl</AssetPath>
@@ -51,7 +51,7 @@
     <CSEntryPoint>CSMain</CSEntryPoint>
     <SourceFile>spriteBatch.hlsl</SourceFile>
     <ShowPemutations>false</ShowPemutations>
-    <ListingPath>D:\HPC\CloudDemo\GridDemo\GridDemo\Content\Temp\A41575F61A6644F1898EE4AE0783DAF8.html</ListingPath>
+    <ListingPath>C:\Users\mukhi_000\GridDemo\GridDemo\Content\Temp\A41575F61A6644F1898EE4AE0783DAF8.html</ListingPath>
   </Asset>
   <Asset xsi:type="UbershaderAsset">
     <AssetPath>stereo.hlsl</AssetPath>
@@ -71,7 +71,7 @@
     <CSEntryPoint>CSMain</CSEntryPoint>
     <SourceFile>stereo.hlsl</SourceFile>
     <ShowPemutations>true</ShowPemutations>
-    <ListingPath>D:\HPC\CloudDemo\GridDemo\GridDemo\Content\Temp\4B9F5097212F68238CEF9BFF980979F4.html</ListingPath>
+    <ListingPath>C:\Users\mukhi_000\GridDemo\GridDemo\Content\Temp\4B9F5097212F68238CEF9BFF980979F4.html</ListingPath>
   </Asset>
   <Asset xsi:type="UbershaderAsset">
     <AssetPath>render.hlsl</AssetPath>
@@ -91,7 +91,7 @@
     <CSEntryPoint>CSMain</CSEntryPoint>
     <SourceFile>render.hlsl</SourceFile>
     <ShowPemutations>false</ShowPemutations>
-    <ListingPath>D:\HPC\CloudDemo\GridDemo\GridDemo\Content\Temp\D2FF2A025CD3CFBBE98E238647ED8262.html</ListingPath>
+    <ListingPath>C:\Users\mukhi_000\GridDemo\GridDemo\Content\Temp\D2FF2A025CD3CFBBE98E238647ED8262.html</ListingPath>
   </Asset>
   <Asset xsi:type="FbxFileSceneAsset">
     <AssetPath>Scenes/testScene.fbx</AssetPath>
@@ -328,7 +328,7 @@
     <CSEntryPoint>CSMain</CSEntryPoint>
     <SourceFile>test.hlsl</SourceFile>
     <ShowPemutations>false</ShowPemutations>
-    <ListingPath>D:\HPC\CloudDemo\GridDemo\GridDemo\Content\Temp\F896B223F730F30840F6325E60A3DDCB.html</ListingPath>
+    <ListingPath>C:\Users\mukhi_000\GridDemo\GridDemo\Content\Temp\F896B223F730F30840F6325E60A3DDCB.html</ListingPath>
   </Asset>
   <Asset xsi:type="ImageFileTextureAsset">
     <AssetPath>particle3.tga</AssetPath>
@@ -374,7 +374,7 @@
     <CSEntryPoint>CSMain</CSEntryPoint>
     <SourceFile>points.hlsl</SourceFile>
     <ShowPemutations>false</ShowPemutations>
-    <ListingPath>D:\HPC\CloudDemo\GridDemo\GridDemo\Content\Temp\069FE88E085130771DE0CA2D7D5ACC4D.html</ListingPath>
+    <ListingPath>C:\Users\mukhi_000\GridDemo\GridDemo\Content\Temp\069FE88E085130771DE0CA2D7D5ACC4D.html</ListingPath>
   </Asset>
   <Asset xsi:type="ImageFileTextureAsset">
     <AssetPath>cloud1.tga</AssetPath>
@@ -388,5 +388,18 @@
     <Normal>false</Normal>
     <Compression>RGB</Compression>
     <SourceFile>cloud1.tga</SourceFile>
+  </Asset>
+  <Asset xsi:type="ImageFileTextureAsset">
+    <AssetPath>noise.tga</AssetPath>
+    <BuildOrder>0</BuildOrder>
+    <IgnoreToolChanges>false</IgnoreToolChanges>
+    <NoMips>false</NoMips>
+    <Fast>false</Fast>
+    <ToNormal>false</ToNormal>
+    <Color>true</Color>
+    <Alpha>false</Alpha>
+    <Normal>false</Normal>
+    <Compression>RGB</Compression>
+    <SourceFile>noise.tga</SourceFile>
   </Asset>
 </ArrayOfAsset>
