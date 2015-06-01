@@ -72,14 +72,22 @@ OUT_PARTICLE VSMain( VS_IN input )
 	float4	normal	=	mul( float4(input.Normal,0),  Batch.World 		);
 	
 	output.Position = vPos;
-	output.Color 	= input.Color * Noise.SampleLevel(Sampler, float2(pos.x, pos.z)/100, 0);
-//	output.Color 	= input.Color * Noise[float2(input.Position.x + 512, input.Position.z + 512)];
+	float c = Noise.SampleLevel(Sampler, float2(pos.x, pos.z)/100, 0);
+
+	if (c < 0.3f) {
+		output.Color	= 0;
+		output.Size		= 0;
+	} else {
+		output.Color 	= input.Color * c;
+		output.Size		= input.Size / 2;
+	}
+	//output.Color 	= input.Color ;//* Noise[float2(input.Position.x + 512, input.Position.z + 512)];
 	output.TexCoord	= input.TexCoord;
 	output.WNormal	= normalize(normal);
 	uint2 pos_xy = { 0, 0 } ;
-	output.Size		= input.Size / 2;/// * Noise.SampleLevel(Sampler, float2(pos.x, pos.z)/100, 0); //pow(Noise.SampleLevel(Sampler, float2(pos.x, pos.z), 0), 2);
+	/// * Noise.SampleLevel(Sampler, float2(pos.x, pos.z)/100, 0); //pow(Noise.SampleLevel(Sampler, float2(pos.x, pos.z), 0), 2);
 	output.Angle	= input.Angle;
-	
+	//output.Size		= input.Size / 2;
 	return output;
 }
 

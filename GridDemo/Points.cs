@@ -203,15 +203,15 @@ namespace GridDemo {
 				int currentRing = 1;
 				while ( currentRing <= numberOfCircles ) {
 					Color color = Color.White; //new Color(Color3.White, 1 - 0.3f * currentRing);
-					
+					size = size * random.NextFloat(0.5f, 2);
 					CreateRing( 2 * currentRing + 1 , start, step, color, randomness, size );
 					start -= ( Vector3.UnitX + Vector3.UnitZ ) * step;
 					//CreateLastRing( 9, start, step, color, randomness, size );
 					//step = step * 2;
 					//size = size * (1 + 0.1f * currentRing);
+					size = gc.Config.Size;
 					currentRing++;
 				}
-				size = gc.Config.Size;
 				numberOfPoints = list.Count;
 				Log.Message( "{0}", numberOfPoints );
 			}
