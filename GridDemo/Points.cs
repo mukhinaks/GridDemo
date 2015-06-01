@@ -212,7 +212,7 @@ namespace GridDemo {
 			uberShader = Game.Content.Load<Ubershader>("points");
 			factory = new StateFactory( uberShader, typeof( RenderFlags ), (ps, i) => EnumAction( ps, (RenderFlags) i ) );
 			texture = Game.Content.Load<Texture2D>("cloud1");
-			noise = Game.Content.Load<Texture2D>("noise");
+			noise = Game.Content.Load<Texture2D>("noise2");
 		}
 
 		void EnumAction(PipelineState ps, RenderFlags flag) {

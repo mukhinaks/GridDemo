@@ -72,12 +72,12 @@ OUT_PARTICLE VSMain( VS_IN input )
 	float4	normal	=	mul( float4(input.Normal,0),  Batch.World 		);
 	
 	output.Position = vPos;
-	output.Color 	= input.Color * Noise.SampleLevel(Sampler, float2(pos.x, pos.z), 0);
+	output.Color 	= input.Color * Noise.SampleLevel(Sampler, float2(pos.x, pos.z)/100, 0);
 //	output.Color 	= input.Color * Noise[float2(input.Position.x + 512, input.Position.z + 512)];
 	output.TexCoord	= input.TexCoord;
 	output.WNormal	= normalize(normal);
 	uint2 pos_xy = { 0, 0 } ;
-	output.Size		= input.Size / 2 * pow(Noise.SampleLevel(Sampler, float2(pos.x, pos.z), 0), 2);
+	output.Size		= input.Size / 2;/// * Noise.SampleLevel(Sampler, float2(pos.x, pos.z)/100, 0); //pow(Noise.SampleLevel(Sampler, float2(pos.x, pos.z), 0), 2);
 	output.Angle	= input.Angle;
 	
 	return output;
@@ -133,7 +133,7 @@ void GSMain( point OUT_PARTICLE inputPoint[1], inout TriangleStream<PS_IN> outpu
 
 float4 PSMain( PS_IN input ) : SV_Target
 {
-	return Texture.Sample( Sampler, input.TexCoord ) * 0.25 * input.Color;
+	return Texture.Sample( Sampler, input.TexCoord ) * 0.5 * input.Color;
 }
 
 
