@@ -87,7 +87,7 @@ namespace GridDemo {
 			var p = new PointVertex() {
 				Position	= pos,
 				Normal		= normal, 
-				Color		= Color.White.ToVector4(),//color,
+				Color		= color, //Color.White.ToVector4(),//
 				TexCoord	= texcoord,
 				Size		= size,
 				Angle		= random.NextFloat( -MathUtil.Pi, MathUtil.Pi ),
@@ -183,20 +183,32 @@ namespace GridDemo {
 				//add inside square
 				AddPoint( start, Vector3.Up, Color.White.ToVector4(), Vector2.Zero, size  );
 				start -= (Vector3.UnitX + Vector3.UnitZ) * step;
-				CreateRing( 3, start, step, Color.White, randomness, size   );
-				start -= (Vector3.UnitX + Vector3.UnitZ) * step;
+				//CreateRing( 3, start, step, Color.White, randomness, size   );
+				//start -= (Vector3.UnitX + Vector3.UnitZ) * step;
 
-				//create circles
+				////create circles
+				//int currentRing = 1;
+				//while ( currentRing <= numberOfCircles ) {
+					
+				//	CreateRing( 5, start, step, Color.Red, randomness, size  );
+				//	start -= ( Vector3.UnitX + Vector3.UnitZ ) * step;
+				//	CreateRing( 7, start, step, Color.Red, randomness, size );
+				//	start -= ( Vector3.UnitX + Vector3.UnitZ ) * step;
+				//	CreateLastRing( 9, start, step, Color.LightCyan, randomness, size );
+				//	step = step * 2;
+				//	size = size * 2;
+				//	currentRing++;
+				//}
+
 				int currentRing = 1;
 				while ( currentRing <= numberOfCircles ) {
+					Color color = Color.White; //new Color(Color3.White, 1 - 0.3f * currentRing);
 					
-					CreateRing( 5, start, step, Color.Red, randomness, size  );
+					CreateRing( 2 * currentRing + 1 , start, step, color, randomness, size );
 					start -= ( Vector3.UnitX + Vector3.UnitZ ) * step;
-					CreateRing( 7, start, step, Color.Red, randomness, size );
-					start -= ( Vector3.UnitX + Vector3.UnitZ ) * step;
-					CreateLastRing( 9, start, step, Color.LightCyan, randomness, size );
-					step = step * 2;
-					size = size * 2;
+					//CreateLastRing( 9, start, step, color, randomness, size );
+					//step = step * 2;
+					//size = size * (1 + 0.1f * currentRing);
 					currentRing++;
 				}
 				size = gc.Config.Size;
@@ -212,7 +224,7 @@ namespace GridDemo {
 			uberShader = Game.Content.Load<Ubershader>("points");
 			factory = new StateFactory( uberShader, typeof( RenderFlags ), (ps, i) => EnumAction( ps, (RenderFlags) i ) );
 			texture = Game.Content.Load<Texture2D>("cloud1");
-			noise = Game.Content.Load<Texture2D>("noise2");
+			noise = Game.Content.Load<Texture2D>("noise");
 		}
 
 		void EnumAction(PipelineState ps, RenderFlags flag) {
