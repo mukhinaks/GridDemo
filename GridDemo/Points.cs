@@ -29,6 +29,7 @@ namespace GridDemo {
 		StateFactory factory;
 		Texture2D texture;
 		Texture2D noise;
+		RenderTarget2D rt;
 		int numberOfPoints = 0;
 		Random random = new Random();
 
@@ -145,6 +146,7 @@ namespace GridDemo {
 			vb = new VertexBuffer( Game.GraphicsDevice, typeof( PointVertex ), 128*128 ); 
 			list = new List<PointVertex>();
 						
+			CreateTargets();
 			base.Initialize();
 
 			Game.Reloading += Game_Reloading;
@@ -152,7 +154,18 @@ namespace GridDemo {
 
 		}
 
+		
+		/// <summary>
+		/// Load content
+		/// </summary>
+		public void CreateTargets ()
+		{
+			var vp		=	Game.GraphicsDevice.DisplayBounds;
 
+			SafeDispose( ref rt);
+
+			rt	=	new RenderTarget2D( Game.GraphicsDevice, ColorFormat.Rgba8, vp.Width, vp.Height, true );
+		}
 
 		void Game_Reloading(object sender, EventArgs e) {
 			//SafeDispose( ref factory );
@@ -287,6 +300,8 @@ namespace GridDemo {
 			constBuffer.SetData(cbData);
 			Game.GraphicsDevice.PipelineState = factory[(int) ( (followCamera) ? RenderFlags.RELATIVE : RenderFlags.FIXED)];
 			
+			Game.GraphicsDevice.SetTargets(null, rt.Surface);
+
 			Game.GraphicsDevice.PixelShaderConstants[0] = constBuffer;
 			Game.GraphicsDevice.VertexShaderConstants[0] = constBuffer;
 			Game.GraphicsDevice.VertexShaderResources[1] = noise;
@@ -300,6 +315,7 @@ namespace GridDemo {
 			Game.GraphicsDevice.SetupVertexInput( vb, null );
 			Game.GraphicsDevice.Draw(numberOfPoints, 0);
 
+			Game.GraphicsDevice.RestoreBackbuffer();
 						
 			base.Draw(gameTime, stereoEye);
 		}
